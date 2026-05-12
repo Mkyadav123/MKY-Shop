@@ -1,0 +1,63 @@
+{
+  "id": "prod_plastic_box_001",
+  "sku": "TT-1178-L",
+  "name": "Transparent Plastic Storage Box with Lid",
+  
+  "description": "Durable transparent plastic storage box manufactured by TT Terminal Technologies Pvt Ltd. Ideal for organizing small components, electronics, tools, and household items. Features a secure snap-lock lid for safe storage and easy visibility of contents.",
+
+  "shortDescription": "Transparent plastic storage box with secure lid",
+
+  "brand": "TT Terminal Technologies Pvt Ltd",
+
+  "category": {
+    "id": "cat_storage",
+    "name": "Storage Containers"
+  },
+
+  "price": {
+    "amount": 10,
+    "currency": "INR"
+  },
+
+  "inventory": {
+    "quantity": 200,
+    "inStock": true
+  },
+
+  "attributes": {
+    "material": "Plastic (Polypropylene)",
+    "color": "Transparent",
+    "closureType": "Snap Lock Lid",
+    "shape": "Rectangular",
+    "usage": "Storage / Organization",
+    "durability": "Reusable",
+    "stackable": true
+  },
+
+  "dimensions": {
+    "length": 18,
+    "width": 12,
+    "height": 6,
+    "unit": "cm"
+  },
+
+  "images": [
+    {
+      "url": "/productImages/product_img.webp",
+      "alt": "Top view of transparent plastic storage box"
+    }
+  ],
+
+  "tags": [
+    "storage box",
+    "plastic container",
+    "organizer",
+    "utility box",
+    "electronics storage"
+  ],
+
+  "status": "active",
+
+  "createdAt": "2026-04-16T10:00:00Z",
+  "updatedAt": "2026-04-16T10:00:00Z"
+}
