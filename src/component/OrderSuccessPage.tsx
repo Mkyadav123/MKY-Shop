@@ -84,7 +84,9 @@ export default function OrderSuccessPage(): JSX.Element {
   
   useEffect(() => {
     if (
-      !state?.paymentId
+      !state ||
+      !state.paymentId ||
+      !state.orderId
     ) {
       navigate(
         "/product",

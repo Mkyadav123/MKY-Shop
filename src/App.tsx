@@ -46,6 +46,8 @@ const OrderSuccessPage =
       )
   );
 
+import NotFoundPage from "./component/NotFoundPage";
+
 import type {
   CartItem,
 } from "./types/cart";
@@ -173,6 +175,13 @@ export default function App(): JSX.Element {
             element={
               <OrderSuccessPage />
             }
+          />
+          
+          {/* NOT FOUND */}
+
+          <Route
+            path="*"
+            element={<NotFoundPage />}
           />
         </Routes>
       </Suspense>

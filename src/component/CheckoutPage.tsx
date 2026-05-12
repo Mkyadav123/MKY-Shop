@@ -418,6 +418,7 @@ const handlePlaceOrder =
           navigate(
             "/order-success",
             {
+              replace: true,
               state: {
                 paymentId:response.razorpay_payment_id,
                 amount: total,
