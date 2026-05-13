@@ -457,7 +457,7 @@ const handlePlaceOrder =
 
           const emailResponse =
             await fetch(
-              "http://localhost/backend/send-email.php",
+              "/backend/send-email.php",
               {
                 method: "POST",
 
