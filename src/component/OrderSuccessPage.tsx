@@ -604,7 +604,7 @@ const handleDownloadReceipt =
     doc.text(
       "Grand Total",
       25,
-      y
+      y - 0.5
     );
 
     doc.setTextColor(
@@ -623,7 +623,7 @@ const handleDownloadReceipt =
     doc.text(
       `Rs. ${amount}`,
       145,
-      y + 2
+      y - 1 
     );
 
     /* =========================
@@ -644,15 +644,43 @@ const handleDownloadReceipt =
     );
 
     doc.text(
-      "Thank you for shopping with MKY Store.",
-      20,
-      275
+      "Thank you for shopping with",
+      95,
+      275,
+      {
+        align: "center",
+      }
+    );
+
+    doc.setTextColor(
+      37,
+      99,
+      235
+    );
+
+    doc.textWithLink(
+      "MKY Store.",
+      127,
+      275,
+      {
+        url: "https://shop.mky.co.in",
+        align: "center",
+      }
+    );
+
+    doc.setTextColor(
+      gray[0],
+      gray[1],
+      gray[2]
     );
 
     doc.text(
       "Secure payments powered by Razorpay.",
-      20,
-      282
+      105,
+      285,
+      {
+        align: "center",
+      }
     );
 
     /* =========================

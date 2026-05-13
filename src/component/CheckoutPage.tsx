@@ -338,7 +338,7 @@ const handlePlaceOrder =
     ========================= */
 
     const options = {
-      key: "rzp_test_SegzRobzbxXg02", // RAZORPAY KEY
+      key: "rzp_live_SegYFxOhoLAMON", // Test/Live RAZORPAY KEY
 
       amount: total * 100,
 
@@ -475,12 +475,55 @@ const handlePlaceOrder =
 
                   paymentId:
                     response.razorpay_payment_id,
+
+                  orderId,
                 }),
               }
             );
 
-          const emailData: EmailResponse =
-            await emailResponse.json();
+          const rawResponse =
+            await emailResponse.text();
+
+          if (!rawResponse) {
+            console.warn(
+              "Empty backend response"
+            );
+
+            return;
+          }
+
+          let emailData: EmailResponse;
+
+          try {
+            emailData =
+              JSON.parse(rawResponse);
+          } catch (error) {
+            console.error(
+              "JSON Parse Error:",
+              rawResponse
+            );
+
+            return;
+          }
+
+          if (
+            emailData.status ===
+            "success"
+          ) {
+            setForm({
+              name: "",
+              email: "",
+              phone: "",
+              address: "",
+              city: "",
+              pincode: "",
+            });
+          } else {
+            console.error(
+              "Email Error:",
+              emailData.message
+            );
+          }
 
           /* =========================
              EMAIL SUCCESS

@@ -52,6 +52,8 @@ import type {
   CartItem,
 } from "./types/cart";
 
+import ScrollToTopPage from "./component/ScrollToTop";
+
 /* =========================
    COMPONENT
 ========================= */
@@ -116,6 +118,8 @@ export default function App(): JSX.Element {
         smooth
         color="#ff7f50"
       />
+
+      <ScrollToTopPage />
 
       {/* ROUTES */}
       <Suspense fallback={<div />}>
