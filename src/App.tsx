@@ -53,6 +53,7 @@ import type {
 } from "./types/cart";
 
 import ScrollToTopPage from "./component/ScrollToTop";
+import OrdersPage from "./component/OrdersPage";
 
 /* =========================
    COMPONENT
@@ -186,6 +187,13 @@ export default function App(): JSX.Element {
           <Route
             path="*"
             element={<NotFoundPage />}
+          />
+
+          {/* ORDERS Dashboard */}
+          
+          <Route
+            path="/orders"
+            element={<OrdersPage setCart={setCart} />}
           />
         </Routes>
       </Suspense>

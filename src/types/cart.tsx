@@ -52,3 +52,24 @@ export interface CartItem {
 
   category?: ProductCategory;
 }
+
+export interface Order {
+  id: number;
+  order_id: string;
+  customer_name: string;
+  amount: number;
+  payment_id: string;
+  created_at: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  pincode: string;
+  payment_status: string;
+
+  items: any[];
+}
+
+export interface OrdersPageProps {
+  setCart: React.Dispatch<any>;
+}

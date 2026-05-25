@@ -451,6 +451,43 @@ const handlePlaceOrder =
             }
           }, 1500);
 
+
+          /* =========================
+              SAVE ORDER
+          ========================= */
+
+          try {
+            await fetch(
+              "/backend/save-order.php",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json",
+                },
+
+                body: JSON.stringify({
+                  ...form,
+
+                  items: cart,
+
+                  total,
+
+                  paymentId:
+                    response.razorpay_payment_id,
+
+                  orderId,
+                }),
+              }
+            );
+          } catch (error) {
+            console.error(
+              "Order Save Error:",
+              error
+            );
+          }
+
           /* =========================
              SEND EMAIL
           ========================= */
