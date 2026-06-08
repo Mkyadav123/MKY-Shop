@@ -1,0 +1,131 @@
+import type { Order } from "../types/cart";
+
+export const mockOrders: Order[] = [
+  {
+    id: 1,
+    order_id: "ORD-2026-0001",
+    customer_name: "Ravi Kumar",
+    amount: 50,
+    payment_id: "pay_RZP10001",
+    created_at: "2026-05-10T09:15:00Z",
+    email: "ravi.kumar@gmail.com",
+    phone: "9812345670",
+    address: "12, MG Road",
+    city: "Mumbai",
+    pincode: "400001",
+    payment_status: "Complete",
+    items: [{ id: "prod_plastic_box_001", name: "Transparent Plastic Storage Box with Lid", qty: 5, price: { amount: 10 } }],
+  },
+  {
+    id: 2,
+    order_id: "ORD-2026-0002",
+    customer_name: "Priya Sharma",
+    amount: 30,
+    payment_id: "pay_RZP10002",
+    created_at: "2026-05-12T14:30:00Z",
+    email: "priya.sharma@yahoo.com",
+    phone: "9823456781",
+    address: "45, Linking Road",
+    city: "Pune",
+    pincode: "411001",
+    payment_status: "Complete",
+    items: [{ id: "prod_plastic_box_001", name: "Transparent Plastic Storage Box with Lid", qty: 3, price: { amount: 10 } }],
+  },
+  {
+    id: 3,
+    order_id: "ORD-2026-0003",
+    customer_name: "Ankit Patel",
+    amount: 20,
+    payment_id: "pay_RZP10003",
+    created_at: "2026-05-15T11:00:00Z",
+    email: "ankit.patel@hotmail.com",
+    phone: "9834567892",
+    address: "7, SG Highway",
+    city: "Ahmedabad",
+    pincode: "380015",
+    payment_status: "Pending",
+    items: [{ id: "prod_plastic_box_001", name: "Transparent Plastic Storage Box with Lid", qty: 2, price: { amount: 10 } }],
+  },
+  {
+    id: 4,
+    order_id: "ORD-2026-0004",
+    customer_name: "Sneha Reddy",
+    amount: 100,
+    payment_id: "pay_RZP10004",
+    created_at: "2026-05-18T16:45:00Z",
+    email: "sneha.reddy@gmail.com",
+    phone: "9845678903",
+    address: "23, Banjara Hills",
+    city: "Hyderabad",
+    pincode: "500034",
+    payment_status: "Complete",
+    items: [{ id: "prod_plastic_box_001", name: "Transparent Plastic Storage Box with Lid", qty: 10, price: { amount: 10 } }],
+  },
+  {
+    id: 5,
+    order_id: "ORD-2026-0005",
+    customer_name: "Mohit Joshi",
+    amount: 40,
+    payment_id: "pay_RZP10005",
+    created_at: "2026-05-20T08:20:00Z",
+    email: "mohit.joshi@gmail.com",
+    phone: "9856789014",
+    address: "88, Rajpur Road",
+    city: "Dehradun",
+    pincode: "248001",
+    payment_status: "Complete",
+    items: [{ id: "prod_plastic_box_001", name: "Transparent Plastic Storage Box with Lid", qty: 4, price: { amount: 10 } }],
+  },
+  {
+    id: 6,
+    order_id: "ORD-2026-0006",
+    customer_name: "Divya Nair",
+    amount: 10,
+    payment_id: "pay_RZP10006",
+    created_at: "2026-06-01T10:10:00Z",
+    email: "divya.nair@gmail.com",
+    phone: "9867890125",
+    address: "5, Marine Drive",
+    city: "Kochi",
+    pincode: "682001",
+    payment_status: "Pending",
+    items: [{ id: "prod_plastic_box_001", name: "Transparent Plastic Storage Box with Lid", qty: 1, price: { amount: 10 } }],
+  },
+];
+
+export interface AdminProduct {
+  id: string;
+  name: string;
+  price: number;
+  stock: number;
+  inStock: boolean;
+  category: string;
+  sku: string;
+  imageUrl: string;
+  description: string;
+}
+
+const PRODUCTS_KEY = "mky_admin_products";
+
+const defaultProducts: AdminProduct[] = [
+  {
+    id: "prod_plastic_box_001",
+    name: "Transparent Plastic Storage Box with Lid",
+    price: 10,
+    stock: 200,
+    inStock: true,
+    category: "Storage Containers",
+    sku: "TT-1178-L",
+    imageUrl: "/productImages/product_img.webp",
+    description: "Transparent plastic storage box with secure lid",
+  },
+];
+
+export function getAdminProducts(): AdminProduct[] {
+  const stored = localStorage.getItem(PRODUCTS_KEY);
+  return stored ? JSON.parse(stored) : defaultProducts;
+}
+
+export function saveAdminProducts(products: AdminProduct[]): void {
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+}

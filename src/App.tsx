@@ -1,6 +1,8 @@
 import {
   useEffect,
   useState,
+  lazy,
+  Suspense,
   type JSX,
 } from "react";
 
@@ -11,196 +13,161 @@ import ScrollToTop from "react-scroll-to-top";
 import {
   Routes,
   Route,
+  Outlet,
 } from "react-router-dom";
 
 import ProductListPage from "./component/ProductListPage";
-
 import Header from "./component/Header";
-
 import Footer from "./component/Footer";
-
-import {
-  lazy,
-  Suspense,
-} from "react";
-
-const CartPage = lazy(
-  () =>
-    import(
-      "./component/CartPage"
-    )
-);
-
-const CheckoutPage = lazy(
-  () =>
-    import(
-      "./component/CheckoutPage"
-    )
-);
-
-const OrderSuccessPage =
-  lazy(
-    () =>
-      import(
-        "./component/OrderSuccessPage"
-      )
-  );
-
 import NotFoundPage from "./component/NotFoundPage";
-
-import type {
-  CartItem,
-} from "./types/cart";
-
 import ScrollToTopPage from "./component/ScrollToTop";
 import OrdersPage from "./component/OrdersPage";
 
+import AdminLogin from "./admin/AdminLogin";
+import AdminLayout from "./admin/AdminLayout";
+
+import type { CartItem } from "./types/cart";
+
+/* ---- Lazy loaded storefront pages ---- */
+
+const CartPage = lazy(() => import("./component/CartPage"));
+const CheckoutPage = lazy(() => import("./component/CheckoutPage"));
+const OrderSuccessPage = lazy(() => import("./component/OrderSuccessPage"));
+
+/* ---- Lazy loaded admin pages ---- */
+
+const AdminOrders = lazy(() => import("./admin/pages/AdminOrders"));
+const AdminCustomers = lazy(() => import("./admin/pages/AdminCustomers"));
+const AdminProducts = lazy(() => import("./admin/pages/AdminProducts"));
+
 /* =========================
-   COMPONENT
+   STOREFRONT LAYOUT
 ========================= */
 
-export default function App(): JSX.Element {
-  /* =========================
-     STATE
-  ========================= */
-
-  const [cart, setCart] =
-    useState<CartItem[]>(() => {
-      const savedCart =
-        localStorage.getItem(
-          "cart"
-        );
-
-      return savedCart
-        ? JSON.parse(savedCart)
-        : [];
-    });
-
-  /* =========================
-     LOCAL STORAGE
-  ========================= */
-
-  useEffect(() => {
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(cart)
-    );
-  }, [cart]);
-
-  /* =========================
-     TOTAL CART COUNT
-  ========================= */
-
-  const cartCount =
-    cart.reduce(
-      (
-        total: number,
-        item: CartItem
-      ) =>
-        total + item.qty,
-      0
-    );
-
-  /* =========================
-     RENDER
-  ========================= */
-
+function StorefrontLayout({
+  cartCount,
+  cart,
+  setCart,
+}: {
+  cartCount: number;
+  cart: CartItem[];
+  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
+}): JSX.Element {
   return (
     <>
-      {/* HEADER */}
+      <Header cartCount={cartCount} />
 
-      <Header
-        cartCount={cartCount}
-      />
-
-      {/* SCROLL */}
-
-      <ScrollToTop
-        smooth
-        color="#ff7f50"
-      />
-
+      <ScrollToTop smooth color="#ff7f50" />
       <ScrollToTopPage />
 
-      {/* ROUTES */}
       <Suspense fallback={<div />}>
-        <Routes>
-          {/* HOME */}
-
-          <Route
-            path="/"
-            element={
-              <ProductListPage
-                cart={cart}
-                setCart={setCart}
-              />
-            }
-          />
-
-          {/* PRODUCT */}
-
-          <Route
-            path="/product"
-            element={
-              <ProductListPage
-                cart={cart}
-                setCart={setCart}
-              />
-            }
-          />
-
-          {/* CART */}
-
-          <Route
-            path="/cart"
-            element={
-              <CartPage
-                cart={cart}
-                setCart={setCart}
-              />
-            }
-          />
-
-          {/* CHECKOUT */}
-
-          <Route
-            path="/checkout"
-            element={
-              <CheckoutPage
-                cart={cart}
-                setCart={setCart}
-              />
-            }
-          />
-
-          {/* SUCCESS */}
-
-          <Route
-            path="/order-success"
-            element={
-              <OrderSuccessPage />
-            }
-          />
-          
-          {/* NOT FOUND */}
-
-          <Route
-            path="*"
-            element={<NotFoundPage />}
-          />
-
-          {/* ORDERS Dashboard */}
-          
-          <Route
-            path="/orders"
-            element={<OrdersPage setCart={setCart} />}
-          />
-        </Routes>
+        <Outlet context={{ cart, setCart }} />
       </Suspense>
-
-      {/* FOOTER */}
 
       <Footer />
     </>
+  );
+}
+
+/* =========================
+   APP
+========================= */
+
+export default function App(): JSX.Element {
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    const saved = localStorage.getItem("cart");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  const cartCount = cart.reduce(
+    (total: number, item: CartItem) => total + item.qty,
+    0
+  );
+
+  return (
+    <Routes>
+      {/* ==================
+          ADMIN ROUTES
+      ================== */}
+
+      <Route path="/admin" element={<AdminLogin />} />
+
+      <Route element={<AdminLayout />}>
+        <Route
+          path="/admin/orders"
+          element={
+            <Suspense fallback={<div />}>
+              <AdminOrders />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/admin/customers"
+          element={
+            <Suspense fallback={<div />}>
+              <AdminCustomers />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/admin/products"
+          element={
+            <Suspense fallback={<div />}>
+              <AdminProducts />
+            </Suspense>
+          }
+        />
+      </Route>
+
+      {/* ==================
+          STOREFRONT ROUTES
+      ================== */}
+
+      <Route
+        element={
+          <StorefrontLayout
+            cartCount={cartCount}
+            cart={cart}
+            setCart={setCart}
+          />
+        }
+      >
+        <Route
+          path="/"
+          element={<ProductListPage cart={cart} setCart={setCart} />}
+        />
+
+        <Route
+          path="/product"
+          element={<ProductListPage cart={cart} setCart={setCart} />}
+        />
+
+        <Route
+          path="/cart"
+          element={<CartPage cart={cart} setCart={setCart} />}
+        />
+
+        <Route
+          path="/checkout"
+          element={<CheckoutPage cart={cart} setCart={setCart} />}
+        />
+
+        <Route
+          path="/order-success"
+          element={<OrderSuccessPage />}
+        />
+
+        <Route
+          path="/orders"
+          element={<OrdersPage setCart={setCart} />}
+        />
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }
