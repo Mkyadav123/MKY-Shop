@@ -1,8 +1,8 @@
 const ADMIN_KEY = "mky_admin_auth";
 
 const CREDENTIALS = {
-  username: "admin",
-  password: "admin123",
+  username: "mky",
+  password: "1991@9699",
 };
 
 export function adminLogin(
