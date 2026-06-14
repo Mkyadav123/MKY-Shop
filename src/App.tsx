@@ -21,7 +21,6 @@ import Header from "./component/Header";
 import Footer from "./component/Footer";
 import NotFoundPage from "./component/NotFoundPage";
 import ScrollToTopPage from "./component/ScrollToTop";
-import OrdersPage from "./component/OrdersPage";
 
 import AdminLogin from "./admin/AdminLogin";
 import AdminLayout from "./admin/AdminLayout";
@@ -159,11 +158,6 @@ export default function App(): JSX.Element {
         <Route
           path="/order-success"
           element={<OrderSuccessPage />}
-        />
-
-        <Route
-          path="/orders"
-          element={<OrdersPage setCart={setCart} />}
         />
 
         <Route path="*" element={<NotFoundPage />} />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect,useState } from "react";
 import type { JSX } from "react";
 import {
   Box,
@@ -32,7 +32,6 @@ import {
   CheckCircle,
   HourglassEmpty,
 } from "@mui/icons-material";
-import { mockOrders } from "../mockData";
 import type { Order } from "../../types/cart";
 
 /* =========================
@@ -97,8 +96,9 @@ export default function AdminOrders(): JSX.Element {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [selected, setSelected] = useState<Order | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
 
-  const filtered = mockOrders.filter((o) => {
+  const filtered = orders.filter((o) => {
     const matchSearch =
       o.order_id.toLowerCase().includes(search.toLowerCase()) ||
       o.customer_name.toLowerCase().includes(search.toLowerCase());
@@ -107,9 +107,31 @@ export default function AdminOrders(): JSX.Element {
     return matchSearch && matchStatus;
   });
 
-  const totalRevenue = mockOrders.reduce((s, o) => s + o.amount, 0);
-  const completed = mockOrders.filter((o) => o.payment_status === "Complete").length;
-  const pending = mockOrders.filter((o) => o.payment_status === "Pending").length;
+  const totalRevenue = orders.reduce((s, o) => s + o.amount, 0);
+  const completed = orders.filter((o) => o.payment_status === "PAID").length;
+  const pending = orders.filter((o) => o.payment_status === "PENDING").length;
+
+  /* =====================================
+     FETCH ORDERS
+  ===================================== */
+
+  useEffect(() => {
+
+    fetch(
+      "http://localhost/backend/get-orders.php"
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setOrders(data);
+      })
+      .catch((err) => {
+        console.error(
+          "Orders Error:",
+          err
+        );
+      });
+
+  }, []);
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
@@ -132,7 +154,7 @@ export default function AdminOrders(): JSX.Element {
       >
         <StatCard
           label="Total Orders"
-          value={mockOrders.length}
+          value={orders.length}
           icon={<ShoppingBag />}
           color="linear-gradient(135deg,#3b82f6,#2563eb)"
         />
@@ -180,8 +202,8 @@ export default function AdminOrders(): JSX.Element {
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               <MenuItem value="ALL">All</MenuItem>
-              <MenuItem value="Complete">Complete</MenuItem>
-              <MenuItem value="Pending">Pending</MenuItem>
+              <MenuItem value="PAID">Paid</MenuItem>
+              <MenuItem value="PENDING">Pending</MenuItem>
             </Select>
           </FormControl>
         </Stack>
@@ -196,7 +218,7 @@ export default function AdminOrders(): JSX.Element {
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: "#f8fafc" }}>
-              {["Order ID", "Customer", "Amount", "Date", "Status", "Actions"].map((h) => (
+              {["Order ID", "Date", "Ship To", "Amount", "Status", "Actions"].map((h) => (
                 <TableCell key={h} sx={{ fontWeight: 700, color: "#475569" }}>
                   {h}
                 </TableCell>
@@ -212,6 +234,9 @@ export default function AdminOrders(): JSX.Element {
                 <TableCell sx={{ fontWeight: 700, color: "#1e293b" }}>
                   {order.order_id}
                 </TableCell>
+                <TableCell sx={{ color: "#64748b", fontSize: "0.85rem" }}>
+                  {new Date(order.created_at).toLocaleDateString("en-IN")}
+                </TableCell>
                 <TableCell>
                   <Typography sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
                     {order.customer_name}
@@ -222,15 +247,12 @@ export default function AdminOrders(): JSX.Element {
                 </TableCell>
                 <TableCell sx={{ fontWeight: 700, color: "#2563eb" }}>
                   ₹{order.amount}
-                </TableCell>
-                <TableCell sx={{ color: "#64748b", fontSize: "0.85rem" }}>
-                  {new Date(order.created_at).toLocaleDateString("en-IN")}
-                </TableCell>
+                </TableCell>                
                 <TableCell>
                   <Chip
                     label={order.payment_status}
                     size="small"
-                    color={order.payment_status === "Complete" ? "success" : "warning"}
+                    color={order.payment_status === "PAID" ? "success" : "warning"}
                     sx={{ fontWeight: 700 }}
                   />
                 </TableCell>
