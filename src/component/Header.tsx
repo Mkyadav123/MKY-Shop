@@ -91,7 +91,7 @@ export default function Header({
           }}
         >
           <RouterLink
-            to="/product"
+            to="/products"
             style={{
               color: "#fff",
               textDecoration:

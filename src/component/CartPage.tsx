@@ -208,7 +208,7 @@ export default function CartPage({
                 variant="contained"
                 size="large"
                 onClick={() =>
-                  navigate("/product")
+                  navigate("/products")
                 }
                 sx={{
                   bgcolor: "#1a202c",
@@ -528,7 +528,7 @@ export default function CartPage({
             <Button
               variant="contained"
               onClick={() =>
-                navigate("/product")
+                navigate("/products")
               }
               startIcon={<ArrowBack />}
               sx={{

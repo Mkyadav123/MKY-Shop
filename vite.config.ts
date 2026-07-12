@@ -7,6 +7,21 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
 
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost/backend/index.php',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+        configure: (proxy) => {
+          proxy.on('proxyRes', (proxyRes) => {
+            proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+          });
+        }
+      },
+    },
+  },
+
   build: {
     chunkSizeWarningLimit: 1500,
 

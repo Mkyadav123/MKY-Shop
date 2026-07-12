@@ -25,6 +25,7 @@ import {
   Divider,
   Snackbar,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import {
   EditOutlined,
@@ -33,10 +34,15 @@ import {
   CloseOutlined,
   Inventory2,
 } from "@mui/icons-material";
-import { getAdminProducts, saveAdminProducts } from "../mockData";
-import type { AdminProduct } from "../mockData";
+import type { AdminProduct, AdminProductPayload } from "../../types/product";
+import {
+  fetchAdminProducts,
+  createAdminProduct,
+  updateAdminProduct,
+  deleteAdminProduct,
+} from "../../services/productApi";
 
-const emptyProduct: Omit<AdminProduct, "id"> = {
+const emptyProduct: AdminProductPayload = {
   name: "",
   price: 0,
   stock: 0,
@@ -49,20 +55,32 @@ const emptyProduct: Omit<AdminProduct, "id"> = {
 
 export default function AdminProducts(): JSX.Element {
   const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editTarget, setEditTarget] = useState<AdminProduct | null>(null);
-  const [form, setForm] = useState<Omit<AdminProduct, "id">>(emptyProduct);
+  const [form, setForm] = useState<AdminProductPayload>(emptyProduct);
   const [toast, setToast] = useState<{ msg: string; sev: "success" | "error" } | null>(null);
 
-  useEffect(() => {
-    setProducts(getAdminProducts());
-  }, []);
-
-  const persist = (updated: AdminProduct[]) => {
-    setProducts(updated);
-    saveAdminProducts(updated);
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchAdminProducts();
+      setProducts(data);
+    } catch (err) {
+      setToast({
+        msg: err instanceof Error ? err.message : "Failed to load products.",
+        sev: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
   const openAdd = () => {
     setEditTarget(null);
@@ -85,47 +103,81 @@ export default function AdminProducts(): JSX.Element {
     setDialogOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim()) {
       setToast({ msg: "Product name is required.", sev: "error" });
       return;
     }
-    if (editTarget) {
-      persist(
-        products.map((p) =>
-          p.id === editTarget.id ? { ...form, id: editTarget.id } : p
-        )
-      );
-      setToast({ msg: "Product updated.", sev: "success" });
-    } else {
-      const newProduct: AdminProduct = {
-        ...form,
-        id: `prod_${Date.now()}`,
-      };
-      persist([...products, newProduct]);
-      setToast({ msg: "Product added.", sev: "success" });
+
+    try {
+      setSaving(true);
+
+      if (editTarget) {
+        const updated = await updateAdminProduct(editTarget.id, form);
+        setProducts((prev) =>
+          prev.map((p) => (p.id === updated.id ? updated : p))
+        );
+        setToast({ msg: "Product updated.", sev: "success" });
+      } else {
+        const created = await createAdminProduct(form);
+        setProducts((prev) => [created, ...prev]);
+        setToast({ msg: "Product added.", sev: "success" });
+      }
+
+      setDialogOpen(false);
+    } catch (err) {
+      setToast({
+        msg: err instanceof Error ? err.message : "Failed to save product.",
+        sev: "error",
+      });
+    } finally {
+      setSaving(false);
     }
-    setDialogOpen(false);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deleteId) return;
-    persist(products.filter((p) => p.id !== deleteId));
-    setDeleteId(null);
-    setToast({ msg: "Product deleted.", sev: "success" });
+
+    try {
+      await deleteAdminProduct(deleteId);
+      setProducts((prev) => prev.filter((p) => p.id !== deleteId));
+      setDeleteId(null);
+      setToast({ msg: "Product deleted.", sev: "success" });
+    } catch (err) {
+      setToast({
+        msg: err instanceof Error ? err.message : "Failed to delete product.",
+        sev: "error",
+      });
+    }
   };
 
-  const toggleStock = (id: string) => {
-    persist(
-      products.map((p) =>
-        p.id === id ? { ...p, inStock: !p.inStock } : p
-      )
-    );
+  const toggleStock = async (product: AdminProduct) => {
+    try {
+      const updated = await updateAdminProduct(product.id, {
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+        inStock: !product.inStock,
+        category: product.category,
+        sku: product.sku,
+        imageUrl: product.imageUrl,
+        description: product.description,
+      });
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === updated.id ? updated : p))
+      );
+    } catch (err) {
+      setToast({
+        msg: err instanceof Error ? err.message : "Failed to update stock.",
+        sev: "error",
+      });
+    }
   };
 
   const field = (
     label: string,
-    key: keyof Omit<AdminProduct, "id" | "inStock">,
+    key: keyof Omit<AdminProductPayload, "inStock">,
     type: "text" | "number" = "text"
   ) => (
     <TextField
@@ -145,7 +197,6 @@ export default function AdminProducts(): JSX.Element {
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
-      {/* Header */}
       <Box
         sx={{
           display: "flex",
@@ -183,7 +234,6 @@ export default function AdminProducts(): JSX.Element {
         </Button>
       </Box>
 
-      {/* Stat */}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(3,1fr)" }, gap: 2, mb: 4 }}>
         {[
           { label: "Total Products", value: products.length, color: "linear-gradient(135deg,#3b82f6,#2563eb)" },
@@ -222,87 +272,91 @@ export default function AdminProducts(): JSX.Element {
         ))}
       </Box>
 
-      {/* Table */}
-      <TableContainer
-        component={Paper}
-        elevation={0}
-        sx={{ borderRadius: "20px", border: "1px solid #e2e8f0" }}
-      >
-        <Table>
-          <TableHead>
-            <TableRow sx={{ bgcolor: "#f8fafc" }}>
-              {["Product", "SKU", "Price", "Stock", "Status", "Actions"].map((h) => (
-                <TableCell key={h} sx={{ fontWeight: 700, color: "#475569" }}>
-                  {h}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {products.map((p) => (
-              <TableRow key={p.id} sx={{ "&:hover": { bgcolor: "#f8fafc" }, transition: "0.15s" }}>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Avatar
-                      src={p.imageUrl}
-                      variant="rounded"
-                      sx={{ width: 44, height: 44, bgcolor: "#f1f5f9" }}
-                    />
-                    <Box>
-                      <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>
-                        {p.name}
-                      </Typography>
-                      <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>
-                        {p.category}
-                      </Typography>
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{ borderRadius: "20px", border: "1px solid #e2e8f0" }}
+        >
+          <Table>
+            <TableHead>
+              <TableRow sx={{ bgcolor: "#f8fafc" }}>
+                {["Product", "SKU", "Price", "Stock", "Status", "Actions"].map((h) => (
+                  <TableCell key={h} sx={{ fontWeight: 700, color: "#475569" }}>
+                    {h}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {products.map((p) => (
+                <TableRow key={p.id} sx={{ "&:hover": { bgcolor: "#f8fafc" }, transition: "0.15s" }}>
+                  <TableCell>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                      <Avatar
+                        src={p.imageUrl}
+                        variant="rounded"
+                        sx={{ width: 44, height: 44, bgcolor: "#f1f5f9" }}
+                      />
+                      <Box>
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>
+                          {p.name}
+                        </Typography>
+                        <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>
+                          {p.category}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Chip label={p.sku} size="small" sx={{ fontFamily: "monospace", bgcolor: "#f1f5f9", color: "#475569", fontWeight: 600 }} />
-                </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#2563eb" }}>₹{p.price}</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: "#1e293b" }}>{p.stock}</TableCell>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Switch
-                      size="small"
-                      checked={p.inStock}
-                      onChange={() => toggleStock(p.id)}
-                      color="success"
-                    />
-                    <Chip
-                      label={p.inStock ? "In Stock" : "Out of Stock"}
-                      size="small"
-                      color={p.inStock ? "success" : "error"}
-                      sx={{ fontWeight: 700 }}
-                    />
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Stack direction="row" spacing={0.5}>
-                    <IconButton size="small" onClick={() => openEdit(p)} sx={{ color: "#3b82f6" }}>
-                      <EditOutlined fontSize="small" />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => setDeleteId(p.id)} sx={{ color: "#ef4444" }}>
-                      <DeleteOutlined fontSize="small" />
-                    </IconButton>
-                  </Stack>
-                </TableCell>
-              </TableRow>
-            ))}
-            {products.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 6, color: "#94a3b8" }}>
-                  No products yet. Click "Add Product" to get started.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  </TableCell>
+                  <TableCell>
+                    <Chip label={p.sku} size="small" sx={{ fontFamily: "monospace", bgcolor: "#f1f5f9", color: "#475569", fontWeight: 600 }} />
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: "#2563eb" }}>₹{p.price}</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: "#1e293b" }}>{p.stock}</TableCell>
+                  <TableCell>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Switch
+                        size="small"
+                        checked={p.inStock}
+                        onChange={() => toggleStock(p)}
+                        color="success"
+                      />
+                      <Chip
+                        label={p.inStock ? "In Stock" : "Out of Stock"}
+                        size="small"
+                        color={p.inStock ? "success" : "error"}
+                        sx={{ fontWeight: 700 }}
+                      />
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Stack direction="row" spacing={0.5}>
+                      <IconButton size="small" onClick={() => openEdit(p)} sx={{ color: "#3b82f6" }}>
+                        <EditOutlined fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => setDeleteId(p.id)} sx={{ color: "#ef4444" }}>
+                        <DeleteOutlined fontSize="small" />
+                      </IconButton>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {products.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 6, color: "#94a3b8" }}>
+                    No products yet. Click "Add Product" to get started.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
-      {/* Add / Edit Dialog */}
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
@@ -331,6 +385,20 @@ export default function AdminProducts(): JSX.Element {
               {field("Category", "category")}
             </Stack>
             {field("Image URL", "imageUrl")}
+            {form.imageUrl && (
+              <Box
+                component="img"
+                src={form.imageUrl}
+                alt="Preview"
+                sx={{
+                  width: 140,
+                  height: 140,
+                  objectFit: "cover",
+                  borderRadius: 2,
+                  border: "1px solid #ddd",
+                }}
+              />
+            )}
             <TextField
               label="Description"
               size="small"
@@ -363,6 +431,7 @@ export default function AdminProducts(): JSX.Element {
           <Button
             onClick={handleSave}
             variant="contained"
+            disabled={saving}
             sx={{
               borderRadius: "10px",
               textTransform: "none",
@@ -371,12 +440,11 @@ export default function AdminProducts(): JSX.Element {
               "&:hover": { background: "linear-gradient(90deg,#2563eb,#7c3aed)" },
             }}
           >
-            {editTarget ? "Save Changes" : "Add Product"}
+            {saving ? "Saving..." : editTarget ? "Save Changes" : "Add Product"}
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Confirm Delete Dialog */}
       <Dialog
         open={!!deleteId}
         onClose={() => setDeleteId(null)}
@@ -407,7 +475,6 @@ export default function AdminProducts(): JSX.Element {
         </DialogActions>
       </Dialog>
 
-      {/* Toast */}
       <Snackbar
         open={!!toast}
         autoHideDuration={3000}

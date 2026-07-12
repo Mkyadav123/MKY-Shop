@@ -89,7 +89,7 @@ export default function OrderSuccessPage(): JSX.Element {
       !state.orderId
     ) {
       navigate(
-        "/product",
+        "/products",
         {
           replace: true,
         }
@@ -955,7 +955,7 @@ const handleDownloadReceipt =
                   component={
                     RouterLink
                   }
-                  to="/product"
+                  to="/products"
                   fullWidth
                   size="large"
                   startIcon={

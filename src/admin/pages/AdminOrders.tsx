@@ -107,7 +107,8 @@ export default function AdminOrders(): JSX.Element {
     return matchSearch && matchStatus;
   });
 
-  const totalRevenue = orders.reduce((s, o) => s + o.amount, 0);
+  const totalRevenue = orders.reduce((s, o) => s + Number(o.amount), 0);
+  console.log("Total Revenue:", totalRevenue);
   const completed = orders.filter((o) => o.payment_status === "PAID").length;
   const pending = orders.filter((o) => o.payment_status === "PENDING").length;
 

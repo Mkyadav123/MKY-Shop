@@ -25,6 +25,7 @@ import {
   Menu as MenuIcon,
   AdminPanelSettings,
   Dashboard,
+  Settings,
 } from "@mui/icons-material";
 import { adminLogout, isAdminLoggedIn } from "./adminAuth";
 
@@ -35,6 +36,7 @@ const navItems = [
   { label: "Orders", icon: <ShoppingBag />, path: "/admin/orders" },
   { label: "Customers", icon: <People />, path: "/admin/customers" },
   { label: "Products", icon: <Inventory2 />, path: "/admin/products" },
+  { label: "Configuration", icon: <Settings />, path: "/admin/config" },
 ];
 
 export default function AdminLayout(): JSX.Element {

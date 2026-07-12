@@ -26,19 +26,22 @@ export default function AdminLogin(): JSX.Element {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    setTimeout(() => {
-      const ok = adminLogin(username, password);
+    try {
+      const ok = await adminLogin(username, password);
       if (ok) {
         navigate("/admin/orders");
       } else {
         setError("Invalid username or password.");
       }
+    } catch {
+      setError("Could not connect to the server. Please try again.");
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
   return (
@@ -165,7 +168,7 @@ export default function AdminLogin(): JSX.Element {
             fontSize: "0.78rem",
           }}
         >
-          Default: admin / admin123
+          MKY Shop · Admin Access
         </Typography>
       </Card>
     </Box>

@@ -16,7 +16,8 @@ import {
   Outlet,
 } from "react-router-dom";
 
-import ProductListPage from "./component/ProductListPage";
+import ProductsListingPage from "./component/ProductsListingPage";
+import ProductDetailPage from "./component/ProductDetailPage";
 import Header from "./component/Header";
 import Footer from "./component/Footer";
 import NotFoundPage from "./component/NotFoundPage";
@@ -38,6 +39,7 @@ const OrderSuccessPage = lazy(() => import("./component/OrderSuccessPage"));
 const AdminOrders = lazy(() => import("./admin/pages/AdminOrders"));
 const AdminCustomers = lazy(() => import("./admin/pages/AdminCustomers"));
 const AdminProducts = lazy(() => import("./admin/pages/AdminProducts"));
+const AdminConfig = lazy(() => import("./admin/pages/AdminConfig"));
 
 /* =========================
    STOREFRONT LAYOUT
@@ -120,6 +122,14 @@ export default function App(): JSX.Element {
             </Suspense>
           }
         />
+        <Route
+          path="/admin/config"
+          element={
+            <Suspense fallback={<div />}>
+              <AdminConfig />
+            </Suspense>
+          }
+        />
       </Route>
 
       {/* ==================
@@ -137,12 +147,17 @@ export default function App(): JSX.Element {
       >
         <Route
           path="/"
-          element={<ProductListPage cart={cart} setCart={setCart} />}
+          element={<ProductsListingPage cart={cart} setCart={setCart} />}
         />
 
         <Route
-          path="/product"
-          element={<ProductListPage cart={cart} setCart={setCart} />}
+          path="/products"
+          element={<ProductsListingPage cart={cart} setCart={setCart} />}
+        />
+
+        <Route
+          path="/product/:id"
+          element={<ProductDetailPage cart={cart} setCart={setCart} />}
         />
 
         <Route
