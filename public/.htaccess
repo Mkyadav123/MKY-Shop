@@ -1,0 +1,15 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# ── API routes → PHP backend ────────────────────────────────────────────────
+# Rewrite /api/* to /backend/index.php so the central router handles it.
+# This is the production equivalent of the Vite dev-server proxy.
+RewriteRule ^api/(.*)$ backend/index.php/api/$1 [L,QSA,NC]
+
+# ── SPA fallback ─────────────────────────────────────────────────────────────
+# For any URL that isn't a real file or directory (e.g. /admin/orders,
+# /products, /checkout), serve index.html so React Router takes over.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]

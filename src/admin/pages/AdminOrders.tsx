@@ -24,9 +24,9 @@ import {
   Button,
   Divider,
 } from "@mui/material";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
@@ -115,21 +115,18 @@ export default function AdminOrders(): JSX.Element {
   ===================================== */
 
   useEffect(() => {
-
-    fetch(
-      "http://localhost/backend/get-orders.php"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setOrders(data);
+    fetch("/api/orders", { credentials: "include" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((payload) => {
+        // API returns { success, data: Order[], meta: {...} }
+        setOrders(Array.isArray(payload) ? payload : (payload.data ?? []));
       })
       .catch((err) => {
-        console.error(
-          "Orders Error:",
-          err
-        );
+        console.error("Orders Error:", err);
       });
-
   }, []);
 
   return (

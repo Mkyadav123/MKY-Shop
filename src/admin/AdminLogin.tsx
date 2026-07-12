@@ -11,11 +11,9 @@ import {
   IconButton,
   Alert,
 } from "@mui/material";
-
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-
 import { adminLogin } from "./adminAuth";
 
 export default function AdminLogin(): JSX.Element {

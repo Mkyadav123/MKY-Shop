@@ -10,14 +10,11 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost/backend/index.php',
+        // Forward /api/* → http://localhost/backend/index.php/api/*
+        // index.php strips the prefix and dispatches by route.
+        target: 'http://localhost',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api'),
-        configure: (proxy) => {
-          proxy.on('proxyRes', (proxyRes) => {
-            proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-          });
-        }
+        rewrite: (path) => '/backend/index.php' + path,
       },
     },
   },

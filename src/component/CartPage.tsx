@@ -812,7 +812,7 @@ export default function CartPage({
                     const v = e.target.value.replace(/\D/g, "").slice(0, 6);
                     setPincode(v);
                   }}
-                   slotProps={{ htmlInput: { inputMode: "numeric", maxLength: 6, }, }}
+                  slotProps={{ htmlInput: { inputMode: "numeric", maxLength: 6, }, }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "10px",
