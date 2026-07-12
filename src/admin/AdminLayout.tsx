@@ -17,26 +17,24 @@ import {
   AppBar,
   Toolbar,
 } from "@mui/material";
-import {
-  ShoppingBag,
-  People,
-  Inventory2,
-  Logout,
-  Menu as MenuIcon,
-  AdminPanelSettings,
-  Dashboard,
-  Settings,
-} from "@mui/icons-material";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import PeopleIcon from "@mui/icons-material/People";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
+import LogoutIcon from "@mui/icons-material/Logout";
+import MenuIcon from "@mui/icons-material/Menu";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { adminLogout, isAdminLoggedIn } from "./adminAuth";
 
 const DRAWER_WIDTH = 240;
 
 const navItems = [
-  { label: "Dashboard", icon: <Dashboard />, path: "/admin/orders" },
-  { label: "Orders", icon: <ShoppingBag />, path: "/admin/orders" },
-  { label: "Customers", icon: <People />, path: "/admin/customers" },
-  { label: "Products", icon: <Inventory2 />, path: "/admin/products" },
-  { label: "Configuration", icon: <Settings />, path: "/admin/config" },
+  { label: "Dashboard", icon: <DashboardIcon />, path: "/admin/orders" },
+  { label: "Orders", icon: <ShoppingBagIcon />, path: "/admin/orders" },
+  { label: "Customers", icon: <PeopleIcon />, path: "/admin/customers" },
+  { label: "Products", icon: <Inventory2Icon />, path: "/admin/products" },
+  { label: "Configuration", icon: <SettingsIcon />, path: "/admin/config" },
 ];
 
 export default function AdminLayout(): JSX.Element {
@@ -79,7 +77,7 @@ export default function AdminLayout(): JSX.Element {
             justifyContent: "center",
           }}
         >
-          <AdminPanelSettings sx={{ color: "#fff", fontSize: 20 }} />
+          <AdminPanelSettingsIcon sx={{ color: "#fff", fontSize: 20 }} />
         </Box>
         <Box>
           <Typography sx={{ fontWeight: 800, fontSize: "1rem", color: "#fff" }}>
@@ -171,7 +169,7 @@ export default function AdminLayout(): JSX.Element {
           size="small"
           sx={{ color: "rgba(255,255,255,0.4)", "&:hover": { color: "#ef4444" } }}
         >
-          <Logout fontSize="small" />
+          <LogoutIcon fontSize="small" />
         </IconButton>
       </Box>
     </Box>

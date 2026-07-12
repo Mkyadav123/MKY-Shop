@@ -12,7 +12,9 @@ import {
   CircularProgress,
   Breadcrumbs,
 } from "@mui/material";
-import { ShoppingCart, CheckCircleOutlined, ArrowBackOutlined } from "@mui/icons-material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import { fetchStoreProductById } from "../services/productApi";
 import type { Product } from "../types/product";
 import type { CartItem } from "../types/cart";
@@ -97,7 +99,7 @@ export default function ProductDetailPage({
         <Button
           component={RouterLink}
           to="/products"
-          startIcon={<ArrowBackOutlined />}
+          startIcon={<ArrowBackOutlinedIcon />}
           variant="outlined"
           sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 700 }}
         >
@@ -183,7 +185,7 @@ export default function ProductDetailPage({
               variant="contained"
               size="large"
               disabled={!product.inventory.inStock}
-              startIcon={<ShoppingCart />}
+              startIcon={<ShoppingCartIcon />}
               onClick={() => handleAddToCart(product)}
               sx={{
                 px: 5,
@@ -304,7 +306,7 @@ export default function ProductDetailPage({
         onClose={() => setToastOpen(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert severity="success" icon={<CheckCircleOutlined />}>
+        <Alert severity="success" icon={<CheckCircleOutlinedIcon />}>
           {addedItemName} added to cart!
         </Alert>
       </Snackbar>

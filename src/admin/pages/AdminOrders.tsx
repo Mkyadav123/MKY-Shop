@@ -24,14 +24,12 @@ import {
   Button,
   Divider,
 } from "@mui/material";
-import {
-  VisibilityOutlined,
-  CloseOutlined,
-  SearchOutlined,
-  ShoppingBag,
-  CheckCircle,
-  HourglassEmpty,
-} from "@mui/icons-material";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import type { Order } from "../../types/cart";
 
 /* =========================
@@ -156,25 +154,25 @@ export default function AdminOrders(): JSX.Element {
         <StatCard
           label="Total Orders"
           value={orders.length}
-          icon={<ShoppingBag />}
+          icon={<ShoppingBagIcon />}
           color="linear-gradient(135deg,#3b82f6,#2563eb)"
         />
         <StatCard
           label="Revenue"
           value={`₹${totalRevenue}`}
-          icon={<ShoppingBag />}
+          icon={<ShoppingBagIcon />}
           color="linear-gradient(135deg,#10b981,#059669)"
         />
         <StatCard
           label="Completed"
           value={completed}
-          icon={<CheckCircle />}
+          icon={<CheckCircleIcon />}
           color="linear-gradient(135deg,#8b5cf6,#7c3aed)"
         />
         <StatCard
           label="Pending"
           value={pending}
-          icon={<HourglassEmpty />}
+          icon={<HourglassEmptyIcon />}
           color="linear-gradient(135deg,#f59e0b,#d97706)"
         />
       </Box>
@@ -192,7 +190,7 @@ export default function AdminOrders(): JSX.Element {
             onChange={(e) => setSearch(e.target.value)}
             sx={{ flexGrow: 1 }}
             slotProps={{
-              input: { startAdornment: <SearchOutlined sx={{ color: "#94a3b8", mr: 1 }} /> },
+              input: { startAdornment: <SearchOutlinedIcon sx={{ color: "#94a3b8", mr: 1 }} /> },
             }}
           />
           <FormControl size="small" sx={{ minWidth: 160 }}>
@@ -259,7 +257,7 @@ export default function AdminOrders(): JSX.Element {
                 </TableCell>
                 <TableCell>
                   <IconButton size="small" onClick={() => setSelected(order)}>
-                    <VisibilityOutlined fontSize="small" />
+                    <VisibilityOutlinedIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -296,7 +294,7 @@ export default function AdminOrders(): JSX.Element {
             >
               {selected.order_id}
               <IconButton onClick={() => setSelected(null)}>
-                <CloseOutlined />
+                <CloseOutlinedIcon />
               </IconButton>
             </DialogTitle>
             <Divider />

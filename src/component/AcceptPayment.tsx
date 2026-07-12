@@ -12,12 +12,10 @@ import type {
   Theme,
 } from "@mui/material/styles";
 
-import {
-  CreditCard,
-  AccountBalance,
-  Payment,
-  Security,
-} from "@mui/icons-material";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import PaymentIcon from "@mui/icons-material/Payment";
+import SecurityIcon from "@mui/icons-material/Security";
 
 /* =========================
    TYPES
@@ -47,7 +45,7 @@ const paymentMethods: PaymentMethod[] = [
     id: 1,
     label: "UPI • GPay • PhonePe • Paytm",
     icon: (
-      <Payment
+      <PaymentIcon
         sx={{
           fontSize: 20,
           color: "#065f46 !important",
@@ -64,7 +62,7 @@ const paymentMethods: PaymentMethod[] = [
     id: 2,
     label: "Credit & Debit Cards",
     icon: (
-      <CreditCard
+      <CreditCardIcon
         sx={{
           fontSize: 20,
           color: "#1d4ed8 !important",
@@ -81,7 +79,7 @@ const paymentMethods: PaymentMethod[] = [
     id: 3,
     label: "Net Banking",
     icon: (
-      <AccountBalance
+      <AccountBalanceIcon
         sx={{
           fontSize: 20,
           color: "#c2410c !important",
@@ -127,7 +125,7 @@ export default function AcceptPayment(): JSX.Element {
             mb: 2,
           }}
         >
-          <Security
+          <SecurityIcon
             sx={{
               color: "#16a34a",
               fontSize: 26,

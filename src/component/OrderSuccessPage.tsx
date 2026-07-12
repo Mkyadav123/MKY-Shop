@@ -13,11 +13,9 @@ import {
   Divider,
 } from "@mui/material";
 
-import {
-  CheckCircleRounded,
-  ShoppingBag,
-  ReceiptLong,
-} from "@mui/icons-material";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 
 import {
   useLocation,
@@ -767,7 +765,7 @@ const handleDownloadReceipt =
               }}
             >
               {/* SUCCESS ICON */}
-              <CheckCircleRounded
+              <CheckCircleRoundedIcon
                 sx={{
                   fontSize: {
                     xs: 80,
@@ -959,7 +957,7 @@ const handleDownloadReceipt =
                   fullWidth
                   size="large"
                   startIcon={
-                    <ShoppingBag />
+                    <ShoppingBagIcon />
                   }
                   sx={{
                     py: 1.8,
@@ -991,7 +989,7 @@ const handleDownloadReceipt =
                   fullWidth
                   size="large"
                   variant="outlined"
-                  startIcon={<ReceiptLong />}
+                  startIcon={<ReceiptLongIcon />}
                   onClick={
                     handleDownloadReceipt
                   }

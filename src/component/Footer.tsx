@@ -14,7 +14,7 @@ import {
 
 import type { JSX } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import Favorite from "@mui/icons-material/Favorite";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import {
   FontAwesomeIcon,
@@ -346,7 +346,7 @@ export default function Footer(): JSX.Element {
             }}
           >
             Built with
-            <Favorite
+            <FavoriteIcon
               sx={{
                 color: "#ef4444",
                 fontSize: 18,

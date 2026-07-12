@@ -27,13 +27,11 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  AddOutlined,
-  CloseOutlined,
-  Inventory2,
-} from "@mui/icons-material";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
 import type { AdminProduct, AdminProductPayload } from "../../types/product";
 import {
   fetchAdminProducts,
@@ -217,7 +215,7 @@ export default function AdminProducts(): JSX.Element {
         </Box>
         <Button
           variant="contained"
-          startIcon={<AddOutlined />}
+          startIcon={<AddOutlinedIcon />}
           onClick={openAdd}
           sx={{
             borderRadius: "12px",
@@ -258,7 +256,7 @@ export default function AdminProducts(): JSX.Element {
                 flexShrink: 0,
               }}
             >
-              <Inventory2 />
+              <Inventory2Icon />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 600 }}>
@@ -336,10 +334,10 @@ export default function AdminProducts(): JSX.Element {
                   <TableCell>
                     <Stack direction="row" spacing={0.5}>
                       <IconButton size="small" onClick={() => openEdit(p)} sx={{ color: "#3b82f6" }}>
-                        <EditOutlined fontSize="small" />
+                        <EditOutlinedIcon fontSize="small" />
                       </IconButton>
                       <IconButton size="small" onClick={() => setDeleteId(p.id)} sx={{ color: "#ef4444" }}>
-                        <DeleteOutlined fontSize="small" />
+                        <DeleteOutlinedIcon fontSize="small" />
                       </IconButton>
                     </Stack>
                   </TableCell>
@@ -369,7 +367,7 @@ export default function AdminProducts(): JSX.Element {
         >
           {editTarget ? "Edit Product" : "Add Product"}
           <IconButton onClick={() => setDialogOpen(false)}>
-            <CloseOutlined />
+            <CloseOutlinedIcon />
           </IconButton>
         </DialogTitle>
         <Divider />

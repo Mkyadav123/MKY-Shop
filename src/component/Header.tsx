@@ -11,9 +11,7 @@ import {
   IconButton,
 } from "@mui/material";
 
-import {
-  ShoppingCart,
-} from "@mui/icons-material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 /* =========================
    TYPES
@@ -140,7 +138,7 @@ export default function Header({
               }
               color="error"
             >
-              <ShoppingCart
+              <ShoppingCartIcon
                 sx={{
                   color:
                     "#111",

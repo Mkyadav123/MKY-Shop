@@ -25,16 +25,14 @@ import {
 
 import Grid from "@mui/material/Grid";
 
-import {
-  ArrowBack,
-  CheckCircle,
-  Cancel,
-  LocalShipping,
-  Warning,
-  ErrorOutlined,
-  AddShoppingCart,
-  MyLocation,
-} from "@mui/icons-material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import WarningIcon from "@mui/icons-material/Warning";
+import ErrorOutlinedIcon from "@mui/icons-material/ErrorOutlined";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import MyLocationIcon from "@mui/icons-material/MyLocation";
 
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import { motion } from "framer-motion";
@@ -320,7 +318,7 @@ export default function CheckoutPage({ cart, setCart }: CheckoutPageProps): JSX.
       <Box sx={{ mt:1.5, p:2, borderRadius:"14px",
                  background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.3)" }}>
         <Box sx={{ display:"flex", alignItems:"center", gap:1, mb:0.5 }}>
-          <ErrorOutlined sx={{ color:"#d97706", fontSize:18 }} />
+          <ErrorOutlinedIcon sx={{ color:"#d97706", fontSize:18 }} />
           <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#d97706" }}>
             Address could not be verified
           </Typography>
@@ -339,12 +337,12 @@ export default function CheckoutPage({ cart, setCart }: CheckoutPageProps): JSX.
       <Box sx={{ mt:1.5, p:2, borderRadius:"14px",
                  background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.25)" }}>
         <Box sx={{ display:"flex", alignItems:"center", gap:1, mb:0.5 }}>
-          <Cancel sx={{ color:"#ef4444", fontSize:18 }} />
+          <CancelIcon sx={{ color:"#ef4444", fontSize:18 }} />
           <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#dc2626" }}>
             Outside delivery range
           </Typography>
           {shippingResult.distanceKm !== null && (
-            <Chip icon={<MyLocation sx={{ fontSize:"13px !important" }} />}
+            <Chip icon={<MyLocationIcon sx={{ fontSize:"13px !important" }} />}
                   label={`${shippingResult.distanceKm} km away`} size="small"
                   sx={{ ml:"auto", bgcolor:"rgba(239,68,68,0.12)", color:"#dc2626",
                         fontWeight:700, fontSize:"0.72rem" }} />
@@ -364,11 +362,11 @@ export default function CheckoutPage({ cart, setCart }: CheckoutPageProps): JSX.
                    overflow:"hidden" }}>
           <Box sx={{ display:"flex", alignItems:"center", gap:1, px:2, pt:1.8, pb:1,
                      background:"rgba(234,179,8,0.08)" }}>
-            <Warning sx={{ color:"#ca8a04", fontSize:18 }} />
+            <WarningIcon sx={{ color:"#ca8a04", fontSize:18 }} />
             <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#854d0e" }}>
               Add ₹{shortage.toLocaleString("en-IN")} more to place this order
             </Typography>
-            <Chip icon={<MyLocation sx={{ fontSize:"13px !important" }} />}
+            <Chip icon={<MyLocationIcon sx={{ fontSize:"13px !important" }} />}
                   label={`${shippingResult.distanceKm} km · ${shippingResult.matchedTier.label}`}
                   size="small"
                   sx={{ ml:"auto", bgcolor:"rgba(234,179,8,0.15)", color:"#92400e",
@@ -399,11 +397,11 @@ export default function CheckoutPage({ cart, setCart }: CheckoutPageProps): JSX.
       <Box sx={{ mt:1.5, p:2, borderRadius:"14px",
                  background:"rgba(22,163,74,0.07)", border:"1px solid rgba(22,163,74,0.25)" }}>
         <Box sx={{ display:"flex", alignItems:"center", gap:1 }}>
-          <CheckCircle sx={{ color:"#16a34a", fontSize:18 }} />
+          <CheckCircleIcon sx={{ color:"#16a34a", fontSize:18 }} />
           <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#15803d" }}>
             Delivery available ✓
           </Typography>
-          <Chip icon={<MyLocation sx={{ fontSize:"13px !important" }} />}
+          <Chip icon={<MyLocationIcon sx={{ fontSize:"13px !important" }} />}
                 label={`${shippingResult.distanceKm} km · ${shippingResult.matchedTier?.label}`}
                 size="small"
                 sx={{ ml:"auto", bgcolor:"rgba(22,163,74,0.12)", color:"#15803d",
@@ -430,7 +428,7 @@ export default function CheckoutPage({ cart, setCart }: CheckoutPageProps): JSX.
             <Typography sx={{ color:"#94A3B8", fontWeight:600, mb:1 }}>Secure Checkout</Typography>
             <Typography variant="h3" sx={{ color:"#fff", fontWeight:800 }}>Complete Your Order</Typography>
           </Box>
-          <Button component={RouterLink} to="/cart" startIcon={<ArrowBack />} variant="outlined"
+          <Button component={RouterLink} to="/cart" startIcon={<ArrowBackIcon />} variant="outlined"
             sx={{ borderColor:"rgba(255,255,255,0.2)", color:"#fff", borderRadius:"14px",
                   px:3, py:1, textTransform:"none",
                   "&:hover":{ borderColor:"rgba(255,255,255,0.35)", background:"rgba(255,255,255,0.05)" } }}>
@@ -539,12 +537,12 @@ export default function CheckoutPage({ cart, setCart }: CheckoutPageProps): JSX.
                       <CircularProgress size={14} sx={{ color:"#94a3b8" }} />
                     ) : shippingResult ? (
                       shippingResult.eligible ? (
-                        <Chip icon={<LocalShipping sx={{ fontSize:"14px !important" }} />}
+                        <Chip icon={<LocalShippingIcon sx={{ fontSize:"14px !important" }} />}
                               label="Available — Free" size="small"
                               sx={{ bgcolor:"rgba(22,163,74,0.2)", color:"#4ade80",
                                     fontWeight:700, fontSize:"0.74rem" }} />
                       ) : (
-                        <Chip icon={<Cancel sx={{ fontSize:"14px !important" }} />}
+                        <Chip icon={<CancelIcon sx={{ fontSize:"14px !important" }} />}
                               label={shippingResult.geocodingError ? "Address error" : "Not available"}
                               size="small"
                               sx={{ bgcolor:"rgba(239,68,68,0.2)", color:"#f87171",
@@ -582,7 +580,7 @@ export default function CheckoutPage({ cart, setCart }: CheckoutPageProps): JSX.
                                    background:"rgba(234,179,8,0.15)",
                                    border:"1px solid rgba(234,179,8,0.2)",
                                    display:"flex", alignItems:"center", gap:1 }}>
-                          <AddShoppingCart sx={{ color:"#fbbf24", fontSize:15 }} />
+                          <AddShoppingCartIcon sx={{ color:"#fbbf24", fontSize:15 }} />
                           <Typography sx={{ fontSize:"0.76rem", color:"#fbbf24", fontWeight:700 }}>
                             Add ₹{shortage.toLocaleString("en-IN")} more to qualify
                           </Typography>

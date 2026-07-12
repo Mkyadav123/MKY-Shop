@@ -7,10 +7,8 @@ import {
   Typography,
 } from "@mui/material";
 
-import {
-  Home,
-  ArrowBack,
-} from "@mui/icons-material";
+import HomeIcon from "@mui/icons-material/Home";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import {
   Link as RouterLink,
@@ -124,7 +122,7 @@ export default function NotFoundPage(): JSX.Element {
               component={RouterLink}
               to="/"
               variant="contained"
-              startIcon={<Home />}
+              startIcon={<HomeIcon />}
               sx={{
                 px: 4,
                 py: 1.4,
@@ -151,7 +149,7 @@ export default function NotFoundPage(): JSX.Element {
                 window.history.back()
               }
               variant="outlined"
-              startIcon={<ArrowBack />}
+              startIcon={<ArrowBackIcon />}
               sx={{
                 px: 4,
                 py: 1.4,

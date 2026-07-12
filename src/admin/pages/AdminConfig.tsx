@@ -6,10 +6,12 @@ import {
   Divider, Table, TableBody, TableCell, TableContainer, TableHead,
   TableRow, Paper, IconButton, Tooltip, Chip, InputAdornment,
 } from "@mui/material";
-import {
-  SaveOutlined, WarningAmber, AddCircleOutlined, DeleteOutlined,
-  LocalShipping, Store,
-} from "@mui/icons-material";
+import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import StoreIcon from "@mui/icons-material/Store";
 import type { RazorpayConfig, RazorpayConfigRequest } from "../../types/razorpayConfig";
 import type { DatabaseConfig, DatabaseConfigRequest } from "../../types/databaseConfig";
 import type { ShippingTier, StoreConfig } from "../../types/shipping";
@@ -206,12 +208,12 @@ export default function AdminConfig(): JSX.Element {
                 onChange={e=>setConfig({...config,currency:e.target.value})} />
               <Divider />
               <Typography variant="body2" color="textSecondary" sx={{ display:"flex", gap:1 }}>
-                <WarningAmber fontSize="small" />
+                <WarningAmberIcon fontSize="small" />
                 Keep your Key Secret safe. Never share it publicly.
               </Typography>
               <Stack direction="row" spacing={2} sx={{ justifyContent:"flex-end"}}>
                 <Button variant="outlined" disabled={loading} onClick={fetchConfig}>Reset</Button>
-                <Button variant="contained" startIcon={<SaveOutlined />}
+                <Button variant="contained" startIcon={<SaveOutlinedIcon />}
                   disabled={loading} onClick={handleSaveConfig}
                   sx={{ backgroundColor:"#1976D2","&:hover":{backgroundColor:"#1565C0"} }}>
                   {loading ? <CircularProgress size={24} /> : "Save Configuration"}
@@ -248,7 +250,7 @@ export default function AdminConfig(): JSX.Element {
               <Divider />
               <Stack direction="row" spacing={2} sx={{ justifyContent:"flex-end"}}>
                 <Button variant="outlined" disabled={dbLoading} onClick={fetchDbConfig}>Reset</Button>
-                <Button variant="contained" startIcon={<SaveOutlined />}
+                <Button variant="contained" startIcon={<SaveOutlinedIcon />}
                   disabled={dbLoading} onClick={handleSaveDbConfig}
                   sx={{ backgroundColor:"#1976D2","&:hover":{backgroundColor:"#1565C0"} }}>
                   {dbLoading ? <CircularProgress size={24} /> : "Save Database Config"}
@@ -261,7 +263,7 @@ export default function AdminConfig(): JSX.Element {
 
         {/* ── 3. Shipping / Delivery Zones ── */}
         <Card>
-          <CardHeader avatar={<LocalShipping sx={{ color:"#1976D2" }} />}
+          <CardHeader avatar={<LocalShippingIcon sx={{ color:"#1976D2" }} />}
             title="Delivery Zone Configuration"
             subheader="Set minimum order amounts for each distance zone from your store"
             sx={{ backgroundColor:"#F5F5F5", borderBottom:"1px solid #E0E0E0" }} />
@@ -274,7 +276,7 @@ export default function AdminConfig(): JSX.Element {
               {/* Store Location */}
               <Box>
                 <Box sx={{ display:"flex", alignItems:"center", gap:1, mb:2 }}>
-                  <Store sx={{ color:"#64748b", fontSize:20 }} />
+                  <StoreIcon sx={{ color:"#64748b", fontSize:20 }} />
                   <Typography variant="subtitle1" sx={{ fontWeight:700, color:"#1e293b"}}>
                     Store Location
                   </Typography>
@@ -313,13 +315,13 @@ export default function AdminConfig(): JSX.Element {
               <Box>
                 <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:2 }}>
                   <Box sx={{ display:"flex", alignItems:"center", gap:1 }}>
-                    <LocalShipping sx={{ color:"#64748b", fontSize:20 }} />
+                    <LocalShippingIcon sx={{ color:"#64748b", fontSize:20 }} />
                     <Typography variant="subtitle1" sx={{ fontWeight:700, color:"#1e293b"}}>
                       Delivery Zones
                     </Typography>
                     <Chip label={`${tiers.length} zones`} size="small" sx={{ ml:1 }} />
                   </Box>
-                  <Button startIcon={<AddCircleOutlined />} size="small" variant="outlined"
+                  <Button startIcon={<AddCircleOutlinedIcon />} size="small" variant="outlined"
                     disabled={shippingLoading} onClick={addTier}
                     sx={{ textTransform:"none" }}>
                     Add Zone
@@ -452,7 +454,7 @@ export default function AdminConfig(): JSX.Element {
                               <Tooltip title="Remove zone">
                                 <IconButton size="small" color="error"
                                   disabled={shippingLoading} onClick={()=>removeTier(idx)}>
-                                  <DeleteOutlined fontSize="small" />
+                                  <DeleteOutlinedIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
                             </TableCell>
@@ -476,7 +478,7 @@ export default function AdminConfig(): JSX.Element {
               <Box sx={{ p:2, bgcolor:"#fff8e1", borderRadius:"10px", border:"1px solid #ffe082" }}>
                 <Typography variant="body2" color="#7c5e00"
                   sx={{ display:"flex", gap:1, alignItems:"flex-start" }}>
-                  <WarningAmber fontSize="small" sx={{ flexShrink:0, mt:"1px" }} />
+                  <WarningAmberIcon fontSize="small" sx={{ flexShrink:0, mt:"1px" }} />
                   Orders outside all zones are automatically rejected at checkout. Customers see a clear
                   message showing the minimum order needed for their area.
                 </Typography>
@@ -489,7 +491,7 @@ export default function AdminConfig(): JSX.Element {
                 <Button variant="contained" disabled={shippingLoading} onClick={handleSaveShipping}
                   startIcon={shippingLoading
                     ? <CircularProgress size={18} color="inherit" />
-                    : <SaveOutlined />}
+                    : <SaveOutlinedIcon />}
                   sx={{ backgroundColor:"#1976D2","&:hover":{backgroundColor:"#1565C0"} }}>
                   Save Delivery Zones
                 </Button>

@@ -15,7 +15,8 @@ import {
   Stack,
   Chip,
 } from "@mui/material";
-import { SearchOutlined, People } from "@mui/icons-material";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import PeopleIcon from "@mui/icons-material/People";
 import { mockOrders } from "../mockData";
 
 interface Customer {
@@ -142,7 +143,7 @@ export default function AdminCustomers(): JSX.Element {
                 flexShrink: 0,
               }}
             >
-              <People />
+              <PeopleIcon />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 600 }}>
@@ -170,7 +171,7 @@ export default function AdminCustomers(): JSX.Element {
             onChange={(e) => setSearch(e.target.value)}
             slotProps={{
               input: {
-                startAdornment: <SearchOutlined sx={{ color: "#94a3b8", mr: 1 }} />,
+                startAdornment: <SearchOutlinedIcon sx={{ color: "#94a3b8", mr: 1 }} />,
               },
             }}
           />

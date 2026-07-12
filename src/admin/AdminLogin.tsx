@@ -11,11 +11,11 @@ import {
   IconButton,
   Alert,
 } from "@mui/material";
-import {
-  Visibility,
-  VisibilityOff,
-  AdminPanelSettings,
-} from "@mui/icons-material";
+
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+
 import { adminLogin } from "./adminAuth";
 
 export default function AdminLogin(): JSX.Element {
@@ -83,7 +83,7 @@ export default function AdminLogin(): JSX.Element {
               boxShadow: "0 8px 24px rgba(59,130,246,0.4)",
             }}
           >
-            <AdminPanelSettings sx={{ color: "#fff", fontSize: 32 }} />
+            <AdminPanelSettingsIcon sx={{ color: "#fff", fontSize: 32 }} />
           </Box>
 
           <Typography
@@ -130,7 +130,7 @@ export default function AdminLogin(): JSX.Element {
                       onClick={() => setShowPassword((v) => !v)}
                       sx={{ color: "rgba(255,255,255,0.5)" }}
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                     </IconButton>
                   </InputAdornment>
                 ),

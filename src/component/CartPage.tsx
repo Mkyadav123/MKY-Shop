@@ -18,20 +18,18 @@ import {
   LinearProgress,
 } from "@mui/material";
 
-import {
-  DeleteOutlined,
-  Add,
-  Remove,
-  LockOutlined,
-  ShoppingCartOutlined,
-  ArrowBack,
-  CheckCircle,
-  Cancel,
-  Warning,
-  ErrorOutlined,
-  MyLocation,
-  LocalShipping,
-} from "@mui/icons-material";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import WarningIcon from "@mui/icons-material/Warning";
+import ErrorOutlinedIcon from "@mui/icons-material/ErrorOutlined";
+import MyLocationIcon from "@mui/icons-material/MyLocation";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 
 import {
   motion,
@@ -193,7 +191,7 @@ export default function CartPage({
       <Box sx={{ mt:1.5, p:2, borderRadius:"14px",
                  background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.3)" }}>
         <Box sx={{ display:"flex", alignItems:"center", gap:1, mb:0.5 }}>
-          <ErrorOutlined sx={{ color:"#d97706", fontSize:18 }} />
+          <ErrorOutlinedIcon sx={{ color:"#d97706", fontSize:18 }} />
           <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#d97706" }}>
             Pincode could not be verified
           </Typography>
@@ -209,12 +207,12 @@ export default function CartPage({
       <Box sx={{ mt:1.5, p:2, borderRadius:"14px",
                  background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.25)" }}>
         <Box sx={{ display:"flex", alignItems:"center", gap:1, mb:0.5 }}>
-          <Cancel sx={{ color:"#ef4444", fontSize:18 }} />
+          <CancelIcon sx={{ color:"#ef4444", fontSize:18 }} />
           <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#dc2626" }}>
             Outside delivery range
           </Typography>
           {shippingResult.distanceKm !== null && (
-            <Chip icon={<MyLocation sx={{ fontSize:"13px !important" }} />}
+            <Chip icon={<MyLocationIcon sx={{ fontSize:"13px !important" }} />}
                   label={`${shippingResult.distanceKm} km away`} size="small"
                   sx={{ ml:"auto", bgcolor:"rgba(239,68,68,0.12)", color:"#dc2626",
                         fontWeight:700, fontSize:"0.72rem" }} />
@@ -234,11 +232,11 @@ export default function CartPage({
                    overflow:"hidden" }}>
           <Box sx={{ display:"flex", alignItems:"center", gap:1, px:2, pt:1.8, pb:1,
                      background:"rgba(234,179,8,0.08)" }}>
-            <Warning sx={{ color:"#ca8a04", fontSize:18 }} />
+            <WarningIcon sx={{ color:"#ca8a04", fontSize:18 }} />
             <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#854d0e" }}>
               Add ₹{shortage.toLocaleString("en-IN")} more to unlock delivery
             </Typography>
-            <Chip icon={<MyLocation sx={{ fontSize:"13px !important" }} />}
+            <Chip icon={<MyLocationIcon sx={{ fontSize:"13px !important" }} />}
                   label={`${shippingResult.distanceKm} km · ${shippingResult.matchedTier.label}`}
                   size="small"
                   sx={{ ml:"auto", bgcolor:"rgba(234,179,8,0.15)", color:"#92400e",
@@ -268,11 +266,11 @@ export default function CartPage({
       <Box sx={{ mt:1.5, p:2, borderRadius:"14px",
                  background:"rgba(22,163,74,0.07)", border:"1px solid rgba(22,163,74,0.25)" }}>
         <Box sx={{ display:"flex", alignItems:"center", gap:1 }}>
-          <CheckCircle sx={{ color:"#16a34a", fontSize:18 }} />
+          <CheckCircleIcon sx={{ color:"#16a34a", fontSize:18 }} />
           <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#15803d" }}>
             Delivery available ✓
           </Typography>
-          <Chip icon={<MyLocation sx={{ fontSize:"13px !important" }} />}
+          <Chip icon={<MyLocationIcon sx={{ fontSize:"13px !important" }} />}
                 label={`${shippingResult.distanceKm} km · ${shippingResult.matchedTier?.label}`}
                 size="small"
                 sx={{ ml:"auto", bgcolor:"rgba(22,163,74,0.12)", color:"#15803d",
@@ -340,7 +338,7 @@ export default function CartPage({
                   mb: 4,
                 }}
               >
-                <ShoppingCartOutlined
+                <ShoppingCartOutlinedIcon
                   sx={{
                     fontSize: 50,
                     color: "#a0aec0",
@@ -633,7 +631,7 @@ export default function CartPage({
                               )
                             }
                           >
-                            <Remove fontSize="small" />
+                            <RemoveIcon fontSize="small" />
                           </IconButton>
 
                           <Typography
@@ -653,7 +651,7 @@ export default function CartPage({
                               )
                             }
                           >
-                            <Add fontSize="small" />
+                            <AddIcon fontSize="small" />
                           </IconButton>
                         </Box>
 
@@ -682,7 +680,7 @@ export default function CartPage({
                               },
                           }}
                         >
-                          <DeleteOutlined />
+                          <DeleteOutlinedIcon />
                         </IconButton>
                       </Box>
                     </Card>
@@ -697,7 +695,7 @@ export default function CartPage({
               onClick={() =>
                 navigate("/products")
               }
-              startIcon={<ArrowBack />}
+              startIcon={<ArrowBackIcon />}
               sx={{
                 width: "fit-content",
                 px: 3,
@@ -798,7 +796,7 @@ export default function CartPage({
               {/* ── Delivery check ── */}
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                  <LocalShipping sx={{ fontSize: 16, color: "#718096" }} />
+                  <LocalShippingIcon sx={{ fontSize: 16, color: "#718096" }} />
                   <Typography
                     sx={{ fontSize: "0.8rem", fontWeight: 700, color: "#4a5568", textTransform: "uppercase", letterSpacing: "0.5px" }}
                   >
@@ -832,7 +830,7 @@ export default function CartPage({
                   navigate("/checkout")
                 }
                 startIcon={
-                  <LockOutlined />
+                  <LockOutlinedIcon />
                 }
                 sx={{
                   py: 2,

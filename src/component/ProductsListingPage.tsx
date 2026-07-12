@@ -13,7 +13,8 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
-import { ShoppingCart, VisibilityOutlined } from "@mui/icons-material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { motion } from "framer-motion";
 import { fetchStoreProducts } from "../services/productApi";
 import type { Product } from "../types/product";
@@ -229,7 +230,7 @@ export default function ProductsListingPage({
                     to={`/product/${product.id}`}
                     variant="outlined"
                     size="small"
-                    startIcon={<VisibilityOutlined />}
+                    startIcon={<VisibilityOutlinedIcon />}
                     sx={{
                       flex: 1,
                       borderRadius: "10px",
@@ -243,7 +244,7 @@ export default function ProductsListingPage({
                     variant="contained"
                     size="small"
                     disabled={!product.inventory.inStock}
-                    startIcon={<ShoppingCart />}
+                    startIcon={<ShoppingCartIcon />}
                     onClick={() => handleAddToCart(product)}
                     sx={{
                       flex: 1,
