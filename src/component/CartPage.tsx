@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import type { JSX } from "react";
 
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,10 @@ import {
   IconButton,
   Divider,
   CardMedia,
+  TextField,
+  CircularProgress,
+  Chip,
+  LinearProgress,
 } from "@mui/material";
 
 import {
@@ -21,6 +25,12 @@ import {
   LockOutlined,
   ShoppingCartOutlined,
   ArrowBack,
+  CheckCircle,
+  Cancel,
+  Warning,
+  ErrorOutlined,
+  MyLocation,
+  LocalShipping,
 } from "@mui/icons-material";
 
 import {
@@ -28,9 +38,9 @@ import {
   AnimatePresence,
 } from "framer-motion";
 
-import type {
-  CartItem,
-} from "../types/cart";
+import type { CartItem } from "../types/cart";
+import type { ShippingCheckResult } from "../types/shipping";
+import { checkShippingEligibility } from "../services/shippingApi";
 
 /* =========================
    TYPES
@@ -117,6 +127,163 @@ export default function CartPage({
   );
 
   const grandTotal: number = subtotal;
+
+  /* =========================
+     SHIPPING ELIGIBILITY CHECK
+  ========================= */
+
+  const [pincode,         setPincode]         = useState("");
+  const [shippingResult,  setShippingResult]  = useState<ShippingCheckResult | null>(null);
+  const [shippingLoading, setShippingLoading] = useState(false);
+
+  // Auto-check whenever a full 6-digit pincode is typed
+  useEffect(() => {
+    const cleaned = pincode.replace(/\D/g, "");
+    if (cleaned.length !== 6) { setShippingResult(null); return; }
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      setShippingLoading(true);
+      try {
+        const result = await checkShippingEligibility({
+          deliveryAddress: `${cleaned}, India`,
+          orderAmount:     grandTotal,
+          pincode:         cleaned,
+        });
+        if (!cancelled) setShippingResult(result);
+      } catch {
+        if (!cancelled) setShippingResult({
+          success: false, eligible: false, geocodingError: true,
+          distanceKm: null, matchedTier: null, requiredAmount: null,
+          geocodedLat: null, geocodedLng: null,
+          deliveryAddress: cleaned,
+          message: "Could not reach the delivery check service. Please try again.",
+        });
+      } finally {
+        if (!cancelled) setShippingLoading(false);
+      }
+    }, 600);
+
+    return () => { cancelled = true; clearTimeout(timer); };
+  // Re-run whenever pincode OR cart total changes (adding items may unlock eligibility)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pincode, grandTotal]);
+
+  const shortage =
+    shippingResult?.matchedTier && !shippingResult.eligible
+      ? shippingResult.matchedTier.minOrderAmount - grandTotal : 0;
+
+  /* Shipping status banner — mirrors CheckoutPage */
+  const ShippingStatusBadge = (): JSX.Element | null => {
+    if (shippingLoading) return (
+      <Box sx={{ display:"flex", alignItems:"center", gap:1.5, mt:1.5, p:1.5,
+                 borderRadius:"12px", background:"rgba(59,130,246,0.07)",
+                 border:"1px solid rgba(59,130,246,0.18)" }}>
+        <CircularProgress size={16} sx={{ color:"#3b82f6" }} />
+        <Typography sx={{ fontSize:"0.82rem", color:"#3b82f6" }}>
+          Checking delivery availability…
+        </Typography>
+      </Box>
+    );
+
+    if (!shippingResult) return null;
+
+    /* Geocoding / address error */
+    if (shippingResult.geocodingError) return (
+      <Box sx={{ mt:1.5, p:2, borderRadius:"14px",
+                 background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.3)" }}>
+        <Box sx={{ display:"flex", alignItems:"center", gap:1, mb:0.5 }}>
+          <ErrorOutlined sx={{ color:"#d97706", fontSize:18 }} />
+          <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#d97706" }}>
+            Pincode could not be verified
+          </Typography>
+        </Box>
+        <Typography sx={{ fontSize:"0.79rem", color:"#92400e", lineHeight:1.5 }}>
+          {shippingResult.message}
+        </Typography>
+      </Box>
+    );
+
+    /* Outside all delivery zones */
+    if (!shippingResult.eligible && !shippingResult.matchedTier) return (
+      <Box sx={{ mt:1.5, p:2, borderRadius:"14px",
+                 background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.25)" }}>
+        <Box sx={{ display:"flex", alignItems:"center", gap:1, mb:0.5 }}>
+          <Cancel sx={{ color:"#ef4444", fontSize:18 }} />
+          <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#dc2626" }}>
+            Outside delivery range
+          </Typography>
+          {shippingResult.distanceKm !== null && (
+            <Chip icon={<MyLocation sx={{ fontSize:"13px !important" }} />}
+                  label={`${shippingResult.distanceKm} km away`} size="small"
+                  sx={{ ml:"auto", bgcolor:"rgba(239,68,68,0.12)", color:"#dc2626",
+                        fontWeight:700, fontSize:"0.72rem" }} />
+          )}
+        </Box>
+        <Typography sx={{ fontSize:"0.79rem", color:"#7f1d1d", lineHeight:1.5 }}>
+          {shippingResult.message}
+        </Typography>
+      </Box>
+    );
+
+    /* In range but cart total too low — progress bar toward minimum */
+    if (!shippingResult.eligible && shippingResult.matchedTier) {
+      const pct = Math.min((grandTotal / shippingResult.matchedTier.minOrderAmount) * 100, 100);
+      return (
+        <Box sx={{ mt:1.5, borderRadius:"14px", border:"1px solid rgba(234,179,8,0.35)",
+                   overflow:"hidden" }}>
+          <Box sx={{ display:"flex", alignItems:"center", gap:1, px:2, pt:1.8, pb:1,
+                     background:"rgba(234,179,8,0.08)" }}>
+            <Warning sx={{ color:"#ca8a04", fontSize:18 }} />
+            <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#854d0e" }}>
+              Add ₹{shortage.toLocaleString("en-IN")} more to unlock delivery
+            </Typography>
+            <Chip icon={<MyLocation sx={{ fontSize:"13px !important" }} />}
+                  label={`${shippingResult.distanceKm} km · ${shippingResult.matchedTier.label}`}
+                  size="small"
+                  sx={{ ml:"auto", bgcolor:"rgba(234,179,8,0.15)", color:"#92400e",
+                        fontWeight:600, fontSize:"0.7rem" }} />
+          </Box>
+          <Box sx={{ px:2, pt:0.5, pb:0.5, background:"rgba(234,179,8,0.08)" }}>
+            <LinearProgress variant="determinate" value={pct}
+              sx={{ height:6, borderRadius:3, bgcolor:"rgba(234,179,8,0.2)",
+                    "& .MuiLinearProgress-bar": {
+                      background:"linear-gradient(90deg,#f59e0b,#ca8a04)", borderRadius:3 } }} />
+          </Box>
+          <Box sx={{ px:2, pt:0.5, pb:1.8, background:"rgba(234,179,8,0.08)",
+                     display:"flex", justifyContent:"space-between" }}>
+            <Typography sx={{ fontSize:"0.76rem", color:"#92400e" }}>
+              Your cart: <strong>₹{grandTotal.toLocaleString("en-IN")}</strong>
+            </Typography>
+            <Typography sx={{ fontSize:"0.76rem", color:"#92400e" }}>
+              Minimum: <strong>₹{shippingResult.matchedTier.minOrderAmount.toLocaleString("en-IN")}</strong>
+            </Typography>
+          </Box>
+        </Box>
+      );
+    }
+
+    /* Eligible ✅ */
+    return (
+      <Box sx={{ mt:1.5, p:2, borderRadius:"14px",
+                 background:"rgba(22,163,74,0.07)", border:"1px solid rgba(22,163,74,0.25)" }}>
+        <Box sx={{ display:"flex", alignItems:"center", gap:1 }}>
+          <CheckCircle sx={{ color:"#16a34a", fontSize:18 }} />
+          <Typography sx={{ fontSize:"0.84rem", fontWeight:700, color:"#15803d" }}>
+            Delivery available ✓
+          </Typography>
+          <Chip icon={<MyLocation sx={{ fontSize:"13px !important" }} />}
+                label={`${shippingResult.distanceKm} km · ${shippingResult.matchedTier?.label}`}
+                size="small"
+                sx={{ ml:"auto", bgcolor:"rgba(22,163,74,0.12)", color:"#15803d",
+                      fontWeight:600, fontSize:"0.7rem" }} />
+        </Box>
+        <Typography sx={{ fontSize:"0.79rem", color:"#166534", mt:0.5 }}>
+          {shippingResult.message}
+        </Typography>
+      </Box>
+    );
+  };
 
   /* =========================
      EMPTY CART
@@ -605,7 +772,7 @@ export default function CartPage({
                   display: "flex",
                   justifyContent:
                     "space-between",
-                  mb: 4,
+                  mb: 3,
                 }}
               >
                 <Typography
@@ -626,6 +793,36 @@ export default function CartPage({
                 >
                   ₹{grandTotal}
                 </Typography>
+              </Box>
+
+              {/* ── Delivery check ── */}
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                  <LocalShipping sx={{ fontSize: 16, color: "#718096" }} />
+                  <Typography
+                    sx={{ fontSize: "0.8rem", fontWeight: 700, color: "#4a5568", textTransform: "uppercase", letterSpacing: "0.5px" }}
+                  >
+                    Check Delivery
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="Enter pincode (e.g. 400601)"
+                  value={pincode}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/\D/g, "").slice(0, 6);
+                    setPincode(v);
+                  }}
+                   slotProps={{ htmlInput: { inputMode: "numeric", maxLength: 6, }, }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      fontSize: "0.9rem",
+                    },
+                  }}
+                />
+                <ShippingStatusBadge />
               </Box>
 
               <Button
