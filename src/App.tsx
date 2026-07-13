@@ -36,6 +36,7 @@ const OrderSuccessPage = lazy(() => import("./component/OrderSuccessPage"));
 
 /* ---- Lazy loaded admin pages ---- */
 
+const AdminDashboard = lazy(() => import("./admin/pages/AdminDashboard"));
 const AdminOrders = lazy(() => import("./admin/pages/AdminOrders"));
 const AdminCustomers = lazy(() => import("./admin/pages/AdminCustomers"));
 const AdminProducts = lazy(() => import("./admin/pages/AdminProducts"));
@@ -98,6 +99,14 @@ export default function App(): JSX.Element {
       <Route path="/admin" element={<AdminLogin />} />
 
       <Route element={<AdminLayout />}>
+        <Route
+          path="/admin/dashboard"
+          element={
+            <Suspense fallback={<div />}>
+              <AdminDashboard />
+            </Suspense>
+          }
+        />
         <Route
           path="/admin/orders"
           element={

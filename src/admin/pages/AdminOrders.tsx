@@ -27,64 +27,7 @@ import {
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import type { Order } from "../../types/cart";
-
-/* =========================
-   STAT CARD
-========================= */
-
-function StatCard({
-  label,
-  value,
-  icon,
-  color,
-}: {
-  label: string;
-  value: string | number;
-  icon: JSX.Element;
-  color: string;
-}) {
-  return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 3,
-        borderRadius: "20px",
-        border: "1px solid #e2e8f0",
-        display: "flex",
-        alignItems: "center",
-        gap: 2,
-      }}
-    >
-      <Box
-        sx={{
-          width: 48,
-          height: 48,
-          borderRadius: "14px",
-          background: color,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#fff",
-          flexShrink: 0,
-        }}
-      >
-        {icon}
-      </Box>
-      <Box>
-        <Typography sx={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 600 }}>
-          {label}
-        </Typography>
-        <Typography sx={{ fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
-          {value}
-        </Typography>
-      </Box>
-    </Paper>
-  );
-}
 
 /* =========================
    MAIN COMPONENT
@@ -95,6 +38,7 @@ export default function AdminOrders(): JSX.Element {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [selected, setSelected] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [error, setError] = useState("");
 
   const filtered = orders.filter((o) => {
     const matchSearch =
@@ -104,11 +48,6 @@ export default function AdminOrders(): JSX.Element {
       statusFilter === "ALL" || o.payment_status === statusFilter;
     return matchSearch && matchStatus;
   });
-
-  const totalRevenue = orders.reduce((s, o) => s + Number(o.amount), 0);
-  console.log("Total Revenue:", totalRevenue);
-  const completed = orders.filter((o) => o.payment_status === "PAID").length;
-  const pending = orders.filter((o) => o.payment_status === "PENDING").length;
 
   /* =====================================
      FETCH ORDERS
@@ -126,6 +65,9 @@ export default function AdminOrders(): JSX.Element {
       })
       .catch((err) => {
         console.error("Orders Error:", err);
+        setError(
+          err instanceof Error ? err.message : "Could not load orders."
+        );
       });
   }, []);
 
@@ -139,40 +81,22 @@ export default function AdminOrders(): JSX.Element {
         Manage and track all customer orders
       </Typography>
 
-      {/* Stats */}
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4,1fr)" },
-          gap: 2,
-          mb: 4,
-        }}
-      >
-        <StatCard
-          label="Total Orders"
-          value={orders.length}
-          icon={<ShoppingBagIcon />}
-          color="linear-gradient(135deg,#3b82f6,#2563eb)"
-        />
-        <StatCard
-          label="Revenue"
-          value={`₹${totalRevenue}`}
-          icon={<ShoppingBagIcon />}
-          color="linear-gradient(135deg,#10b981,#059669)"
-        />
-        <StatCard
-          label="Completed"
-          value={completed}
-          icon={<CheckCircleIcon />}
-          color="linear-gradient(135deg,#8b5cf6,#7c3aed)"
-        />
-        <StatCard
-          label="Pending"
-          value={pending}
-          icon={<HourglassEmptyIcon />}
-          color="linear-gradient(135deg,#f59e0b,#d97706)"
-        />
-      </Box>
+      {error && (
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            mb: 3,
+            borderRadius: "14px",
+            border: "1px solid #fecaca",
+            bgcolor: "#fef2f2",
+            color: "#b91c1c",
+            fontWeight: 600,
+          }}
+        >
+          {error}
+        </Paper>
+      )}
 
       {/* Filters */}
       <Paper

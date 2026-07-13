@@ -31,7 +31,7 @@ import { adminLogout, checkAdminSession } from "./adminAuth";
 const DRAWER_WIDTH = 240;
 
 const navItems = [
-  { label: "Dashboard", icon: <DashboardIcon />, path: "/admin/orders" },
+  { label: "Dashboard", icon: <DashboardIcon />, path: "/admin/dashboard" },
   { label: "Orders", icon: <ShoppingBagIcon />, path: "/admin/orders" },
   { label: "Customers", icon: <PeopleIcon />, path: "/admin/customers" },
   { label: "Products", icon: <Inventory2Icon />, path: "/admin/products" },

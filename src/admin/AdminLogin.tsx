@@ -31,7 +31,7 @@ export default function AdminLogin(): JSX.Element {
     try {
       const ok = await adminLogin(username, password);
       if (ok) {
-        navigate("/admin/orders");
+        navigate("/admin/dashboard");
       } else {
         setError("Invalid username or password.");
       }
