@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { JSX } from "react";
 import {
   Box,
@@ -14,10 +14,11 @@ import {
   TextField,
   Stack,
   Chip,
+  Skeleton,
 } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
 import SearchOutlined from "@mui/icons-material/SearchOutlined";
-import { mockOrders } from "../mockData";
+import type { Order } from "../../types/cart";
 
 interface Customer {
   name: string;
@@ -28,13 +29,17 @@ interface Customer {
   totalSpent: number;
 }
 
-function buildCustomers(): Customer[] {
+function buildCustomers(orders: Order[]): Customer[] {
   const map = new Map<string, Customer>();
-  for (const o of mockOrders) {
+  for (const o of orders) {
     const existing = map.get(o.email);
     if (existing) {
       existing.totalOrders += 1;
-      existing.totalSpent += o.amount;
+      existing.totalSpent += Number(o.amount);
+      // Keep the most recent name/phone/city in case of updates
+      existing.name = o.customer_name;
+      existing.phone = o.phone;
+      existing.city = o.city;
     } else {
       map.set(o.email, {
         name: o.customer_name,
@@ -42,14 +47,12 @@ function buildCustomers(): Customer[] {
         phone: o.phone,
         city: o.city,
         totalOrders: 1,
-        totalSpent: o.amount,
+        totalSpent: Number(o.amount),
       });
     }
   }
-  return Array.from(map.values());
+  return Array.from(map.values()).sort((a, b) => b.totalSpent - a.totalSpent);
 }
-
-const customers = buildCustomers();
 
 function initials(name: string): string {
   return name
@@ -71,6 +74,41 @@ const COLORS = [
 
 export default function AdminCustomers(): JSX.Element {
   const [search, setSearch] = useState("");
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/orders", { credentials: "include" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((payload) => {
+        if (cancelled) return;
+        const orderList: Order[] = Array.isArray(payload)
+          ? payload
+          : payload.data ?? [];
+        setCustomers(buildCustomers(orderList));
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error("Customers Error:", err);
+          setError(
+            err instanceof Error ? err.message : "Could not load customers."
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filtered = customers.filter(
     (c) =>
@@ -78,6 +116,10 @@ export default function AdminCustomers(): JSX.Element {
       c.email.toLowerCase().includes(search.toLowerCase()) ||
       c.city.toLowerCase().includes(search.toLowerCase())
   );
+
+  const totalRevenue = customers.reduce((s, c) => s + c.totalSpent, 0);
+  const totalOrders = customers.reduce((s, c) => s + c.totalOrders, 0);
+  const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
@@ -89,6 +131,23 @@ export default function AdminCustomers(): JSX.Element {
         All customers who have placed orders
       </Typography>
 
+      {error && (
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            mb: 3,
+            borderRadius: "14px",
+            border: "1px solid #fecaca",
+            bgcolor: "#fef2f2",
+            color: "#b91c1c",
+            fontWeight: 600,
+          }}
+        >
+          {error}
+        </Paper>
+      )}
+
       {/* Stats */}
       <Box
         sx={{
@@ -98,63 +157,66 @@ export default function AdminCustomers(): JSX.Element {
           mb: 4,
         }}
       >
-        {[
-          {
-            label: "Total Customers",
-            value: customers.length,
-            color: "linear-gradient(135deg,#3b82f6,#2563eb)",
-          },
-          {
-            label: "Total Revenue",
-            value: `₹${customers.reduce((s, c) => s + c.totalSpent, 0)}`,
-            color: "linear-gradient(135deg,#10b981,#059669)",
-          },
-          {
-            label: "Avg. Order Value",
-            value: `₹${Math.round(
-              customers.reduce((s, c) => s + c.totalSpent, 0) /
-                customers.reduce((s, c) => s + c.totalOrders, 0)
-            )}`,
-            color: "linear-gradient(135deg,#8b5cf6,#7c3aed)",
-          },
-        ].map((stat) => (
-          <Paper
-            key={stat.label}
-            elevation={0}
-            sx={{
-              p: 3,
-              borderRadius: "20px",
-              border: "1px solid #e2e8f0",
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            <Box
+        {loading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} variant="rounded" height={92} sx={{ borderRadius: "20px" }} />
+          ))
+        ) : (
+          [
+            {
+              label: "Total Customers",
+              value: customers.length,
+              color: "linear-gradient(135deg,#3b82f6,#2563eb)",
+            },
+            {
+              label: "Total Revenue",
+              value: `₹${totalRevenue}`,
+              color: "linear-gradient(135deg,#10b981,#059669)",
+            },
+            {
+              label: "Avg. Order Value",
+              value: `₹${avgOrderValue}`,
+              color: "linear-gradient(135deg,#8b5cf6,#7c3aed)",
+            },
+          ].map((stat) => (
+            <Paper
+              key={stat.label}
+              elevation={0}
               sx={{
-                width: 48,
-                height: 48,
-                borderRadius: "14px",
-                background: stat.color,
+                p: 3,
+                borderRadius: "20px",
+                border: "1px solid #e2e8f0",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                flexShrink: 0,
+                gap: 2,
               }}
             >
-              <PeopleIcon />
-            </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 600 }}>
-                {stat.label}
-              </Typography>
-              <Typography sx={{ fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
-                {stat.value}
-              </Typography>
-            </Box>
-          </Paper>
-        ))}
+              <Box
+                sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: "14px",
+                  background: stat.color,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  flexShrink: 0,
+                }}
+              >
+                <PeopleIcon />
+              </Box>
+              <Box>
+                <Typography sx={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 600 }}>
+                  {stat.label}
+                </Typography>
+                <Typography sx={{ fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
+                  {stat.value}
+                </Typography>
+              </Box>
+            </Paper>
+          ))
+        )}
       </Box>
 
       {/* Search */}
@@ -195,53 +257,65 @@ export default function AdminCustomers(): JSX.Element {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filtered.map((c, i) => (
-              <TableRow
-                key={c.email}
-                sx={{ "&:hover": { bgcolor: "#f8fafc" }, transition: "0.15s" }}
-              >
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Avatar
-                      sx={{
-                        width: 38,
-                        height: 38,
-                        background: COLORS[i % COLORS.length],
-                        fontSize: "0.8rem",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {initials(c.name)}
-                    </Avatar>
-                    <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>
-                      {c.name}
+            {loading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  {Array.from({ length: 5 }).map((__, j) => (
+                    <TableCell key={j}>
+                      <Skeleton variant="text" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              filtered.map((c, i) => (
+                <TableRow
+                  key={c.email}
+                  sx={{ "&:hover": { bgcolor: "#f8fafc" }, transition: "0.15s" }}
+                >
+                  <TableCell>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                      <Avatar
+                        sx={{
+                          width: 38,
+                          height: 38,
+                          background: COLORS[i % COLORS.length],
+                          fontSize: "0.8rem",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {initials(c.name)}
+                      </Avatar>
+                      <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>
+                        {c.name}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Typography sx={{ fontSize: "0.8rem", color: "#475569" }}>
+                      {c.email}
                     </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Typography sx={{ fontSize: "0.8rem", color: "#475569" }}>
-                    {c.email}
-                  </Typography>
-                  <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>
-                    {c.phone}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={c.city}
-                    size="small"
-                    sx={{ fontWeight: 600, bgcolor: "#f1f5f9", color: "#475569" }}
-                  />
-                </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#1e293b" }}>
-                  {c.totalOrders}
-                </TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#2563eb" }}>
-                  ₹{c.totalSpent}
-                </TableCell>
-              </TableRow>
-            ))}
-            {filtered.length === 0 && (
+                    <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>
+                      {c.phone}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={c.city}
+                      size="small"
+                      sx={{ fontWeight: 600, bgcolor: "#f1f5f9", color: "#475569" }}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: "#1e293b" }}>
+                    {c.totalOrders}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: "#2563eb" }}>
+                    ₹{c.totalSpent}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+            {!loading && filtered.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={{ py: 6, color: "#94a3b8" }}>
                   No customers found.

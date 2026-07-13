@@ -79,7 +79,6 @@ export default function ProductDetailPage({
 
     setAddedItemName(item.name);
     setToastOpen(true);
-    navigate("/cart");
   };
 
   if (loading) {
@@ -302,12 +301,29 @@ export default function ProductDetailPage({
 
       <Snackbar
         open={toastOpen}
-        autoHideDuration={3000}
+        autoHideDuration={4000}
         onClose={() => setToastOpen(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert severity="success" icon={<CheckCircleOutlinedIcon />}>
-          {addedItemName} added to cart!
+        <Alert
+          severity="success"
+          icon={<CheckCircleOutlinedIcon />}
+          onClose={() => setToastOpen(false)}
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setToastOpen(false);
+                navigate("/cart");
+              }}
+              sx={{ fontWeight: 700, textTransform: "none" }}
+            >
+              View Cart
+            </Button>
+          }
+        >
+          {addedItemName} was added to your cart.
         </Alert>
       </Snackbar>
     </Box>

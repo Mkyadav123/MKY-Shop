@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import {
   Box,
   Container,
@@ -11,10 +11,12 @@ import {
   Button,
   Chip,
   Alert,
+  Snackbar,
   CircularProgress,
 } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import { motion } from "framer-motion";
 import { fetchStoreProducts } from "../services/productApi";
 import type { Product } from "../types/product";
@@ -28,9 +30,24 @@ interface ProductsListingPageProps {
 export default function ProductsListingPage({
   setCart,
 }: ProductsListingPageProps) {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+  const [toastOpen, setToastOpen] = useState(false);
+  const [addedItemName, setAddedItemName] = useState("");
+  const [toastQueue, setToastQueue] = useState<string[]>([]);
+
+  // Process the queue one toast at a time so simultaneous/rapid
+  // "Add to Cart" clicks each get their own message instead of the
+  // Snackbar silently ignoring updates while already open.
+  useEffect(() => {
+    if (toastQueue.length > 0 && !toastOpen) {
+      setAddedItemName(toastQueue[0]);
+      setToastOpen(true);
+      setToastQueue((prev) => prev.slice(1));
+    }
+  }, [toastQueue, toastOpen]);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -66,6 +83,8 @@ export default function ProductsListingPage({
 
       return [...prevCart, { ...product, qty: 1 }];
     });
+
+    setToastQueue((prev) => [...prev, product.name]);
   };
 
   if (loading) {
@@ -263,6 +282,35 @@ export default function ProductsListingPage({
           </Box>
         )}
       </Container>
+
+      <Snackbar
+        key={addedItemName}
+        open={toastOpen}
+        autoHideDuration={4000}
+        onClose={() => setToastOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity="success"
+          icon={<CheckCircleOutlinedIcon />}
+          onClose={() => setToastOpen(false)}
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setToastOpen(false);
+                navigate("/cart");
+              }}
+              sx={{ fontWeight: 700, textTransform: "none" }}
+            >
+              View Cart
+            </Button>
+          }
+        >
+          {addedItemName} was added to your cart.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

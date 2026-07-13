@@ -16,9 +16,14 @@ import {
   CircularProgress,
   Chip,
   LinearProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import DeleteSweepOutlinedIcon from "@mui/icons-material/DeleteSweepOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -108,6 +113,17 @@ export default function CartPage({
           item.id !== id
       )
     );
+  };
+
+  /* =========================
+     CLEAR ALL
+  ========================= */
+
+  const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
+
+  const clearCart = (): void => {
+    setCart([]);
+    setClearConfirmOpen(false);
   };
 
   /* =========================
@@ -459,6 +475,36 @@ export default function CartPage({
               gap: 3,
             }}
           >
+            {/* ITEM COUNT + CLEAR ALL */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography
+                sx={{ fontWeight: 700, color: "#4a5568" }}
+              >
+                {cart.length} item{cart.length !== 1 ? "s" : ""} in cart
+              </Typography>
+
+              <Button
+                onClick={() => setClearConfirmOpen(true)}
+                startIcon={<DeleteSweepOutlinedIcon />}
+                sx={{
+                  color: "#e53e3e",
+                  fontWeight: 700,
+                  textTransform: "none",
+                  "&:hover": {
+                    bgcolor: "#fff5f5",
+                  },
+                }}
+              >
+                Clear All
+              </Button>
+            </Box>
+
             <AnimatePresence>
               {cart.map(
                 (item: CartItem) => (
@@ -867,6 +913,49 @@ export default function CartPage({
           </Box>
         </Box>
       </Container>
+
+      {/* CLEAR ALL CONFIRMATION */}
+      <Dialog
+        open={clearConfirmOpen}
+        onClose={() => setClearConfirmOpen(false)}
+        slotProps={{ paper: { sx: { borderRadius: "20px", p: 1 } } }}
+      >
+        <DialogTitle sx={{ fontWeight: 800 }}>
+          Clear your cart?
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: "#718096" }}>
+            This will remove all {cart.length} item
+            {cart.length !== 1 ? "s" : ""} from your cart. This
+            can't be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            onClick={() => setClearConfirmOpen(false)}
+            sx={{
+              textTransform: "none",
+              fontWeight: 700,
+              color: "#4a5568",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={clearCart}
+            variant="contained"
+            sx={{
+              textTransform: "none",
+              fontWeight: 700,
+              bgcolor: "#e53e3e",
+              borderRadius: "10px",
+              "&:hover": { bgcolor: "#c53030" },
+            }}
+          >
+            Clear All
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
