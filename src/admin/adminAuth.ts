@@ -49,3 +49,24 @@ export function adminLogout(): void {
 export function isAdminLoggedIn(): boolean {
   return localStorage.getItem(ADMIN_KEY) === "1";
 }
+
+/**
+ * Server-verified session check. Confirms the PHP session cookie is
+ * still valid (not just the localStorage hint) and keeps the hint in
+ * sync — clearing it if the server says the session is gone/expired.
+ */
+export async function checkAdminSession(): Promise<boolean> {
+  try {
+    const res = await fetch("/api/admin/login", { credentials: "include" });
+    const data = await res.json();
+    const loggedIn = res.ok && !!data.loggedIn;
+    if (loggedIn) {
+      localStorage.setItem(ADMIN_KEY, "1");
+    } else {
+      localStorage.removeItem(ADMIN_KEY);
+    }
+    return loggedIn;
+  } catch {
+    return false;
+  }
+}

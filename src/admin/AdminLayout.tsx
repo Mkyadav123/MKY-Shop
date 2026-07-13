@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { JSX } from "react";
-import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { useNavigate, useLocation, Navigate, Outlet } from "react-router-dom";
 import {
   Box,
   Drawer,
@@ -16,6 +16,7 @@ import {
   useTheme,
   AppBar,
   Toolbar,
+  CircularProgress,
 } from "@mui/material";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import PeopleIcon from "@mui/icons-material/People";
@@ -25,7 +26,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { adminLogout, isAdminLoggedIn } from "./adminAuth";
+import { adminLogout, checkAdminSession } from "./adminAuth";
 
 const DRAWER_WIDTH = 240;
 
@@ -43,10 +44,38 @@ export default function AdminLayout(): JSX.Element {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [authState, setAuthState] = useState<"checking" | "authed" | "denied">(
+    "checking"
+  );
 
-  if (!isAdminLoggedIn()) {
-    navigate("/admin");
-    return <></>;
+  useEffect(() => {
+    let cancelled = false;
+    checkAdminSession().then((loggedIn) => {
+      if (!cancelled) setAuthState(loggedIn ? "authed" : "denied");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (authState === "checking") {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          bgcolor: "#f8fafc",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (authState === "denied") {
+    return <Navigate to="/admin" replace />;
   }
 
   const handleLogout = () => {

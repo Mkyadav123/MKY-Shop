@@ -67,7 +67,9 @@ export async function fetchStoreProductById(id: string): Promise<Product | null>
 }
 
 export async function fetchAdminProducts(): Promise<AdminProduct[]> {
-  const response = await fetch("/api/admin/products");
+  const response = await fetch("/api/admin/products", {
+    credentials: "include",
+  });
   const products = await parseResponse<Product[]>(response);
   return products.map(toAdminProduct);
 }
@@ -78,6 +80,7 @@ export async function createAdminProduct(
   const response = await fetch("/api/admin/products", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(toApiPayload(payload)),
   });
 
@@ -92,6 +95,7 @@ export async function updateAdminProduct(
   const response = await fetch(`/api/admin/products/${encodeURIComponent(id)}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(toApiPayload(payload)),
   });
 
@@ -102,6 +106,7 @@ export async function updateAdminProduct(
 export async function deleteAdminProduct(id: string): Promise<void> {
   const response = await fetch(`/api/admin/products/${encodeURIComponent(id)}`, {
     method: "DELETE",
+    credentials: "include",
   });
 
   await parseResponse<null>(response);
