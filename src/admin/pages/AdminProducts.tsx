@@ -198,38 +198,54 @@ export default function AdminProducts(): JSX.Element {
       <Box
         sx={{
           display: "flex",
+          alignItems: "center",
           justifyContent: "space-between",
-          alignItems: "flex-start",
           mb: 4,
-          flexWrap: "wrap",
-          gap: 2,
         }}
       >
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: "#0f172a", mb: 0.5 }}>
+        {/* Left Spacer */}
+        <Box sx={{ width: 160 }} />
+
+        {/* Center Title */}
+        <Box sx={{ flex: 1, textAlign: "center" }}>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 800,
+              color: "#0f172a",
+              mb: 0.5,
+            }}
+          >
             Products
           </Typography>
+
           <Typography sx={{ color: "#64748b" }}>
             Add, edit, and manage your product catalogue
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddOutlinedIcon />}
-          onClick={openAdd}
-          sx={{
-            borderRadius: "12px",
-            textTransform: "none",
-            fontWeight: 700,
-            px: 3,
-            py: 1.2,
-            background: "linear-gradient(90deg,#3b82f6,#8b5cf6)",
-            boxShadow: "0 4px 14px rgba(59,130,246,0.35)",
-            "&:hover": { background: "linear-gradient(90deg,#2563eb,#7c3aed)" },
-          }}
-        >
-          Add Product
-        </Button>
+
+        {/* Right Button */}
+        <Box sx={{ width: 160, display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            variant="contained"
+            startIcon={<AddOutlinedIcon />}
+            onClick={openAdd}
+            sx={{
+              borderRadius: "12px",
+              textTransform: "none",
+              fontWeight: 700,
+              px: 2,
+              py: 1.2,
+              background: "linear-gradient(90deg,#3b82f6,#8b5cf6)",
+              boxShadow: "0 4px 14px rgba(59,130,246,0.35)",
+              "&:hover": {
+                background: "linear-gradient(90deg,#2563eb,#7c3aed)",
+              },
+            }}
+          >
+            Add Product
+          </Button>
+        </Box>
       </Box>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(3,1fr)" }, gap: 2, mb: 4 }}>
